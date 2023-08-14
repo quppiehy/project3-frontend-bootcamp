@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from "react";
-import VibingCat from "../images/vibingcat.gif";
-import Cat1 from "../images/cat1.png";
-import Cat2 from "../images/cat2.png";
-import Cat3 from "../images/cat3.png";
-import Cat4 from "../images/cat4.jpeg";
 import {
   Box,
   Grid,
@@ -11,13 +6,15 @@ import {
   Button,
   TextField,
   Card,
-  CardActions,
   CardContent,
-  textFieldClasses,
+  Divider,
+  Stack,
+  Rating,
 } from "@mui/material";
 import "./Product.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const Product = () => {
   const [productIndex, setProductIndex] = useState();
@@ -26,6 +23,10 @@ const Product = () => {
   const [itemPricePerUnit, setItemPricePerUnit] = useState("1.00");
   const [currentAmountChoice, setCurrentAmountChoice] = useState(1);
   const [availableQuantity, setAvailableQuantity] = useState(0);
+  const [overallPhotos, setOverallPhotos] = useState([]);
+  const [photoDisplay, setPhotoDisplay] = useState();
+  const [MainPhoto, setMainPhoto] = useState("");
+  const [ratingValue, setRatingValue] = useState(null);
 
   const param = useParams();
   if (productIndex !== param.productId) {
@@ -43,12 +44,34 @@ const Product = () => {
           setItemDescription(data.description);
           setItemPricePerUnit(Number(data.price).toFixed(2));
           setAvailableQuantity(data.quantity);
+          setOverallPhotos(data.photos);
+          setMainPhoto(data.photos[0].url);
         })
         .catch((error) => {
           console.log(error);
         });
     }
   }, [productIndex]);
+
+  useEffect(() => {
+    if (overallPhotos) {
+      setPhotoDisplay(
+        overallPhotos.map((photos) => {
+          console.log(photos);
+          return (
+            <Box className="side-picture-container">
+              <Box
+                className="picture"
+                component="img"
+                src={photos.url}
+                alt="Picture"
+              />
+            </Box>
+          );
+        })
+      );
+    }
+  }, [overallPhotos]);
 
   const handleChangeAmount = (input) => {
     if (input === "L") {
@@ -64,11 +87,21 @@ const Product = () => {
     const requestedQuantity = Number(e.target.value);
     if (isNaN(requestedQuantity)) {
       setCurrentAmountChoice(0);
-      alert("You can only key in numbers!");
+      Swal.fire({
+        title: "Error!",
+        text: "You can only key in numbers!",
+        icon: "error",
+        confirmButtonText: "Proceed",
+      });
       return;
     }
     if (requestedQuantity > availableQuantity) {
-      alert(`There are only ${availableQuantity} available!`);
+      Swal.fire({
+        title: "Error!",
+        text: `There are only ${availableQuantity} available!`,
+        icon: "error",
+        confirmButtonText: "Proceed",
+      });
       setCurrentAmountChoice(0);
       return;
     }
@@ -83,44 +116,13 @@ const Product = () => {
               <Box
                 component="img"
                 className="picture"
-                src={VibingCat}
+                src={MainPhoto}
                 alt="Picture"
               />
             </Box>
           </Box>
           <Box className="side-picture-area">
-            <Box className="side-picture-container">
-              <Box
-                className="picture"
-                component="img"
-                src={Cat1}
-                alt="Picture"
-              />
-            </Box>
-            <Box className="side-picture-container">
-              <Box
-                className="picture"
-                component="img"
-                src={Cat2}
-                alt="Picture"
-              />
-            </Box>
-            <Box className="side-picture-container">
-              <Box
-                className="picture"
-                component="img"
-                src={Cat3}
-                alt="Picture"
-              />
-            </Box>
-            <Box className="side-picture-container">
-              <Box
-                className="picture"
-                component="img"
-                src={Cat4}
-                alt="Picture"
-              />
-            </Box>
+            {photoDisplay ? photoDisplay : null}
           </Box>
         </Grid>
         <Grid item xs={12} lg={6}>
@@ -132,10 +134,6 @@ const Product = () => {
                 <Typography variant="h3" color="text.primary" gutterBottom>
                   {itemName}
                 </Typography>
-                <Typography variant="h6" component="div">
-                  Quantity Available:{" "}
-                  <span style={{ color: "red" }}>{availableQuantity}</span>
-                </Typography>
                 <Typography
                   sx={{ mb: 2, mt: 2 }}
                   color="text.primary"
@@ -146,35 +144,103 @@ const Product = () => {
                 <Typography variant="body1" color="text.secondary">
                   {itemDescription}
                 </Typography>
+                <Typography variant="h6" component="div">
+                  Quantity Available:{" "}
+                  <span style={{ color: "red" }}>{availableQuantity}</span>
+                </Typography>
+                <Stack
+                  direction="row"
+                  divider={<Divider orientation="vertical" flexItem />}
+                  spacing={5}
+                  sx={{ mt: 10 }}
+                  justifyContent="space-between"
+                >
+                  <Box>
+                    <Typography component="legend">Product Rating</Typography>
+                    {ratingValue !== null ? (
+                      <Rating name="Review" value={ratingValue} readOnly />
+                    ) : (
+                      <Typography component="legend">
+                        No ratings for this product yet, be the first!
+                      </Typography>
+                    )}
+                  </Box>
+                </Stack>
+                <Stack
+                  direction="row"
+                  divider={<Divider orientation="vertical" flexItem />}
+                  spacing={5}
+                  sx={{ mt: 3 }}
+                  justifyContent="space-between"
+                >
+                  <Typography variant="h6" component="div">
+                    Price:{" "}
+                    <span style={{ color: "red" }}>${itemPricePerUnit}</span>
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ ml: "10vw" }}
+                  >
+                    Contact Seller
+                  </Button>
+                </Stack>
               </CardContent>
-              <CardActions>
-                <Button
-                  variant="outlined"
-                  onClick={(e) => handleChangeAmount("L")}
-                >
-                  ⇚
-                </Button>
-                <TextField
-                  variant="outlined"
-                  value={currentAmountChoice}
-                  onChange={(e) => setQuantityToBuy(e)}
-                  size="small"
-                  sx={{ ml: "0.8vw" }}
-                />
-                <Button
-                  variant="outlined"
-                  onClick={(e) => handleChangeAmount("R")}
-                >
-                  ⇛
-                </Button>
-              </CardActions>
             </Card>
           </Box>
         </Grid>
       </Grid>
-      <Button variant="contained" color="primary" sx={{ marginLeft: "45vw" }}>
-        Add to Cart!
-      </Button>
+      <Grid
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Box sx={{ mt: "20px" }}>
+          <Button
+            variant="outlined"
+            onClick={(e) => handleChangeAmount("L")}
+            disabled={currentAmountChoice < 1}
+          >
+            -
+          </Button>
+          <TextField
+            variant="outlined"
+            value={currentAmountChoice}
+            onChange={(e) => setQuantityToBuy(e)}
+            size="small"
+            sx={{ ml: "0.8vw", mr: "0.8vw" }}
+          />
+          <Button
+            variant="outlined"
+            onClick={(e) => handleChangeAmount("R")}
+            disabled={currentAmountChoice === availableQuantity}
+          >
+            +
+          </Button>
+          <Divider sx={{ mt: "20px", mb: "20px" }} />
+
+          <Button variant="contained" color="primary" sx={{ ml: "8vw" }}>
+            Add to Cart!
+          </Button>
+          <Divider sx={{ mt: "20px", mb: "20px" }} />
+          <Grid
+            container
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Grid item>
+              <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                Reviews
+              </Typography>
+            </Grid>
+          </Grid>
+          <Divider sx={{ mt: "20px", mb: "20px" }} />
+        </Box>
+      </Grid>
     </div>
   );
 };

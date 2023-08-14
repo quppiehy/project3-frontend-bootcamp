@@ -18,27 +18,12 @@ import Saja from "../images/saja.png";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const pages = ["Categories", "Deals", "Delivery"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Profile", "Account", "Dashboard", "Chat", "Logout"];
 
 function Navbar() {
   const { logout } = useAuth0();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
 
   return (
     <AppBar position="static">
@@ -50,7 +35,7 @@ function Navbar() {
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={handleOpenNavMenu}
+              onClick={(event) => setAnchorElNav(event.currentTarget)}
               color="inherit"
             >
               <MenuIcon />
@@ -68,14 +53,14 @@ function Navbar() {
                 horizontal: "left",
               }}
               open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
+              onClose={() => setAnchorElNav(null)}
               sx={{
                 display: { xs: "block", md: "none" },
               }}
             >
               {pages.map((page) => (
                 <Link to={page.toLowerCase()} key={page}>
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <MenuItem key={page} onClick={() => setAnchorElNav(null)}>
                     <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
                 </Link>
@@ -88,7 +73,7 @@ function Navbar() {
               <Link to={page.toLowerCase()} key={page}>
                 <Button
                   key={page}
-                  onClick={handleCloseNavMenu}
+                  onClick={() => setAnchorElNav(null)}
                   sx={{ my: 2, color: "white", display: "block" }}
                 >
                   {page}
@@ -122,13 +107,16 @@ function Navbar() {
               </Tooltip>
             </Link>
 
-            <Link to="profile">
-              <Tooltip title="Profile">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <PersonOutlineIcon sx={{ color: "white" }} alt="Remy Sharp" />
-                </IconButton>
-              </Tooltip>
-            </Link>
+            {/* <Link to="profile"> */}
+            <Tooltip title="Profile">
+              <IconButton
+                onClick={(event) => setAnchorElUser(event.currentTarget)}
+                sx={{ p: 0 }}
+              >
+                <PersonOutlineIcon sx={{ color: "white" }} alt="Remy Sharp" />
+              </IconButton>
+            </Tooltip>
+            {/* </Link> */}
             <Menu
               sx={{ mt: "45px" }}
               id="user-appbar"
@@ -143,22 +131,25 @@ function Navbar() {
                 horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              onClose={() => setAnchorElUser(null)}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={() => setAnchorElUser(null)}>
                   {/* Render the logout button with Auth0 logout functionality */}
+
                   {setting === "Logout" ? (
                     <Button
                       onClick={() =>
-                        logout({ returnTo: "http://localhost:3000" })
+                        logout({ returnTo: process.env.REACT_APP_REDIRECT_URI })
                       }
                       color="inherit"
                     >
                       Logout
                     </Button>
                   ) : (
-                    <Typography textAlign="center">{setting}</Typography>
+                    <Link to={setting.toLowerCase()} key={setting}>
+                      <Typography textAlign="center">{setting}</Typography>
+                    </Link>
                   )}
                 </MenuItem>
               ))}
