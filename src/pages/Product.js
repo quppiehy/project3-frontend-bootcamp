@@ -11,7 +11,7 @@ import {
   Stack,
   Rating,
 } from "@mui/material";
-import "./Product.css";
+import "../styles/product.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
