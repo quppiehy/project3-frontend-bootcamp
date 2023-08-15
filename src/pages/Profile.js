@@ -4,42 +4,65 @@ import axios from "axios";
 import { useUserContext } from "../Components/UserContext";
 
 const Profile = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
   const { currUser, setCurrUser } = useUserContext();
 
+  const [userData, setUserData] = useState({
+    userName: currUser.userName || "",
+    firstName: currUser.firstName || "",
+    lastName: currUser.lastName || "",
+    email: currUser.email || "",
+    mobileNumber: currUser.mobileNumber || "",
+  });
+
+  const [addressData, setAddressData] = useState({
+    address: "",
+    city: "",
+    postalCode: "",
+    contactNumber: "",
+  });
+
   useEffect(() => {
-    console.log(currUser);
-    if (currUser === null) {
+    if (!currUser) {
       const localAccess = JSON.parse(localStorage.getItem("currUser"));
-      console.log(localAccess);
       setCurrUser(localAccess);
     }
+  }, [currUser, setCurrUser]);
+
+  useEffect(() => {
+    getAddress();
   }, [currUser]);
 
-  console.log(currUser);
-
-  const handleUpdate = async () => {
-    console.log(firstName, lastName, username, email, mobileNumber);
+  const getAddress = async () => {
     try {
-      // Send the updated user data to your backend API
-      const response = await axios.post(`http://localhost:8080/users`, {
-        username: username,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        mobileNumber: mobileNumber,
-      });
-      console.log(response);
-      // You can also show a success message to the user if needed
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/users/address/${currUser.id}`
+      );
+      setAddressData((prev) => ({ ...prev, ...response.data }));
     } catch (error) {
-      console.log(error);
-      // Handle error, show an error message, etc.
+      console.error("Error fetching address:", error);
     }
   };
+
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`${process.env.REACT_APP_BACKEND_URL}/users`, {
+        ...userData,
+        id: currUser.id,
+      });
+      await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/users/addresses/${currUser.id}`,
+        { ...addressData, userId: currUser.id }
+      );
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  const handleInputChange = (event, setState, key) => {
+    const { value } = event.target;
+    setState((prev) => ({ ...prev, [key]: value }));
+  };
+
   return (
     <>
       <Box>
@@ -48,62 +71,88 @@ const Profile = () => {
         <hr />
         <Box
           sx={{
-            px: "20px",
+            p: "20px",
             display: "flex",
             flexDirection: "column",
             width: "300px",
+            gap: "20px",
           }}
         >
+          {/* Using a common function to handle changes and setting state */}
           <TextField
             required
             id="username"
-            label="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            InputProps={{
-              style: { backgroundColor: "white" },
-            }}
+            label="Username"
+            value={userData.userName}
+            onChange={(e) => handleInputChange(e, setUserData, "userName")}
+            InputProps={{ style: { backgroundColor: "white" } }}
           />
           <TextField
             required
             id="firstname"
-            label="firstname"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            InputProps={{
-              style: { backgroundColor: "white" },
-            }}
+            label="First Name"
+            value={userData.firstName}
+            onChange={(e) => handleInputChange(e, setUserData, "firstName")}
+            InputProps={{ style: { backgroundColor: "white" } }}
           />
           <TextField
             required
             id="lastname"
-            label="lastname"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            InputProps={{
-              style: { backgroundColor: "white" },
-            }}
+            label="Last Name"
+            value={userData.lastName}
+            onChange={(e) => handleInputChange(e, setUserData, "lastName")}
+            InputProps={{ style: { backgroundColor: "white" } }}
           />
           <TextField
             required
             id="email"
-            label="email"
+            label="Email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            InputProps={{
-              style: { backgroundColor: "white" },
-            }}
+            value={userData.email}
+            onChange={(e) => handleInputChange(e, setUserData, "email")}
+            InputProps={{ style: { backgroundColor: "white" } }}
           />
           <TextField
             required
             id="phone"
-            label="phone"
-            value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
-            InputProps={{
-              style: { backgroundColor: "white" },
-            }}
+            label="Phone"
+            value={userData.mobileNumber}
+            onChange={(e) => handleInputChange(e, setUserData, "mobileNumber")}
+            InputProps={{ style: { backgroundColor: "white" } }}
+          />
+          <TextField
+            required
+            id="address"
+            label="Address"
+            value={addressData.address}
+            onChange={(e) => handleInputChange(e, setAddressData, "address")}
+            InputProps={{ style: { backgroundColor: "white" } }}
+          />
+          <TextField
+            required
+            id="city"
+            label="City"
+            value={addressData.city}
+            onChange={(e) => handleInputChange(e, setAddressData, "city")}
+            InputProps={{ style: { backgroundColor: "white" } }}
+          />
+          <TextField
+            required
+            id="postalCode"
+            label="Postal Code"
+            value={addressData.postalCode}
+            onChange={(e) => handleInputChange(e, setAddressData, "postalCode")}
+            InputProps={{ style: { backgroundColor: "white" } }}
+          />
+          <TextField
+            required
+            id="contactNumber"
+            label="Mobile Number for Address"
+            value={addressData.contactNumber}
+            onChange={(e) =>
+              handleInputChange(e, setAddressData, "contactNumber")
+            }
+            InputProps={{ style: { backgroundColor: "white" } }}
           />
           <Button onClick={handleUpdate} variant="contained">
             Update
