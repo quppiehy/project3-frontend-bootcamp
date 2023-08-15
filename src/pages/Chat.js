@@ -3,8 +3,6 @@ import { useState } from "react";
 import ChatRoom from "../Components/ChatRoom";
 import "../styles/chat.css";
 
-const socket = io.connect(process.env.REACT_APP_CHAT_SERVER);
-
 function Chat() {
   const [username, setUsername] = useState("");
   const [room, setRoom] = useState("");
@@ -13,7 +11,7 @@ function Chat() {
   const joinRoom = () => {
     if (username !== "" && room !== "") {
       console.log(`Joining Room: ${room}`);
-      socket.emit("join_room", room);
+      // socket.emit("join_room", room);
     }
     setShowChat(true);
   };
@@ -40,7 +38,8 @@ function Chat() {
           <button onClick={joinRoom}>Join a room</button>
         </div>
       ) : (
-        <ChatRoom socket={socket} username={username} room={room} />
+        ""
+        // <ChatRoom socket={socket} username={username} room={room} />
       )}
     </div>
   );

@@ -6,8 +6,12 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react"; // Import useAuth0 hook
 import { UserProvider } from "./Components/UserContext";
-
+import { SocketContextProvider } from "./Components/SocketContextProvider";
+// import Product from "./Product";
 import { theme } from "./theme";
+import io from "socket.io-client";
+
+const socket = io.connect(process.env.REACT_APP_CHAT_SERVER);
 
 const AppWithAuth = () => {
   const { isLoading, getAccessTokenSilently } = useAuth0();
@@ -41,8 +45,10 @@ root.render(
       scope: process.env.REACT_APP_SCOPE,
     }}
   >
-    <UserProvider>
-      <AppWithAuth />
-    </UserProvider>
+    <SocketContextProvider socket={socket}>
+      <UserProvider>
+        <AppWithAuth />
+      </UserProvider>
+    </SocketContextProvider>
   </Auth0Provider>
 );
