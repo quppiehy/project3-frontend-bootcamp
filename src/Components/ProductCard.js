@@ -5,12 +5,13 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import { Box, Button, Typography } from "@mui/material";
 import ReviewProduct from "./ReviewProduct";
+import { Link } from "react-router-dom";
 
 const ProductCard = ({ product, cart, quantity, pastorder }) => {
   const [open, setOpen] = useState(false);
-
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  console.log(product);
 
   return (
     <Box>
@@ -84,7 +85,9 @@ const ProductCard = ({ product, cart, quantity, pastorder }) => {
               />
             </>
           ) : (
-            <Button variant="outlined">Add to cart</Button>
+            <Link to={`/products/${product.productId}`}>
+              <Button variant="outlined">See Product Page</Button>
+            </Link>
           )}
         </CardActions>
       </Card>
