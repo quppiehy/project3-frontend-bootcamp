@@ -10,12 +10,12 @@ import {
   Typography,
   CardActionArea,
 } from "@mui/material";
-import Books from "../images/category-books.png";
-import Furniture from "../images/category-furniture.png";
-import HandBag from "../images/category-handbag.png";
-import Sneakers from "../images/category-sneakers.png";
-import Tech from "../images/category-tech.png";
-import Travel from "../images/category-travel.png";
+import ElectronicAccessoriesPicture from "../images/ElectronicAccessories.png";
+import ElectronicDevices from "../images/ElectronicDevices.png";
+import TV from "../images/TV.png";
+import Cream from "../images/Cream.png";
+import BabyToys from "../images/BabyToys.png";
+import PetsGroceries from "../images/PetsGroceries.png";
 import HomepodMini from "../images/deals-homepodmini.png";
 import InstaxMini9 from "../images/deals-instaxmini9.png";
 import BaseCampDuffelM from "../images/deals-basecampduffelm.png";
@@ -27,33 +27,28 @@ import ProductCard from "../Components/ProductCard";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { useUserContext } from "../Components/UserContext";
+import { Link } from "react-router-dom";
 
 const Homepage = () => {
   const { loginWithRedirect, getAccessTokenSilently, user, isAuthenticated } =
     useAuth0();
   const [accessToken, setAccessToken] = useState("");
   const { setCurrUser, currUser } = useUserContext();
-
-  const categories = [
-    { image: Books, name: "Books" },
-    { image: Furniture, name: "Furniture" },
-    { image: HandBag, name: "Fashion accesories" },
-    { image: Sneakers, name: "Women's fashion" },
-    { image: Tech, name: "Electronic Devices" },
-    { image: Travel, name: "Travel" },
-  ];
-
-  const deals = [
+  const [deal1, setDeal1] = useState();
+  const [deal2, setDeal2] = useState();
+  const [deal3, setDeal3] = useState();
+  const [overallDeals, setOverallDeals] = useState();
+  const [deals, setDeals] = useState([
     {
       photos: [
         {
           url: HomepodMini,
         },
       ],
-      title: "HomePod mini",
-      description: "Table with air purifier, stained veneer/black",
-      price: 239.0,
-      stars: 121,
+      title: "etc",
+      description: "etc",
+      price: "etc",
+      productId: 0,
     },
     {
       photos: [
@@ -61,10 +56,10 @@ const Homepage = () => {
           url: InstaxMini9,
         },
       ],
-      title: "Instax Mini 9",
-      description: "Selfie mode and selfie mirror, Macro mode",
-      price: 239.0,
-      stars: 121,
+      title: "etc",
+      description: "etc",
+      price: "etc",
+      productId: 0,
     },
     {
       photos: [
@@ -72,11 +67,59 @@ const Homepage = () => {
           url: BaseCampDuffelM,
         },
       ],
-      title: "Base Camp Duffel M",
-      description: "Table with air purifier, stained veneer/black",
-      price: 239.0,
-      stars: 121,
+      title: "etc",
+      description: "etc",
+      price: "etc",
+      productId: 0,
     },
+  ]);
+
+  useEffect(() => {
+    if ((deal1, deal2, deal3)) {
+      setDeals([
+        {
+          photos: [
+            {
+              url: deal1.photos[0].url,
+            },
+          ],
+          title: deal1.title,
+          description: deal1.description,
+          price: deal1.price,
+          productId: deal1.id,
+        },
+        {
+          photos: [
+            {
+              url: deal2.photos[0].url,
+            },
+          ],
+          title: deal2.title,
+          description: deal2.description,
+          price: deal2.price,
+          productId: deal2.id,
+        },
+        {
+          photos: [
+            {
+              url: deal3.photos[0].url,
+            },
+          ],
+          title: deal3.title,
+          description: deal3.description,
+          price: deal3.price,
+          productId: deal3.id,
+        },
+      ]);
+    }
+  }, [deal1, deal2, deal3]);
+  const categories = [
+    { image: ElectronicAccessoriesPicture, name: "Electronic Accessories" },
+    { image: ElectronicDevices, name: "Electronic Devices" },
+    { image: TV, name: "TV & Home Appliances" },
+    { image: Cream, name: "Health & Beauty" },
+    { image: BabyToys, name: "Baby Toys & Products" },
+    { image: PetsGroceries, name: "Pets & Groceries" },
   ];
   const saves = [
     {
@@ -152,6 +195,31 @@ const Homepage = () => {
     console.log(setCurrUser);
   }, [setCurrUser]);
 
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/products/list`)
+      .then((info) => {
+        const data = info.data;
+        console.log(data);
+        const maxNumber = data.length;
+        let randomNumber1 = Math.floor(Math.random() * maxNumber);
+        console.log(randomNumber1);
+        let randomNumber2 = Math.floor(Math.random() * maxNumber);
+        console.log(randomNumber2);
+        let randomNumber3 = Math.floor(Math.random() * maxNumber);
+        console.log(randomNumber3);
+        setDeal1(data[randomNumber1]);
+        setDeal2(data[randomNumber2]);
+        setDeal3(data[randomNumber3]);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log(deal1);
+  }, [deal1]);
   return (
     <>
       {/* Hero */}
@@ -199,42 +267,44 @@ const Homepage = () => {
           <Grid container spacing={2}>
             {categories.map((category, index) => (
               <Grid item xs={4} sm={6} md={4} lg={2} xl={2} key={index}>
-                <Card
-                  sx={{
-                    height: { xs: "200px", sm: "250px" },
-                    width: { xs: "100%", sm: "200px" },
-                    position: "relative",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <CardMedia
-                    component="img"
+                <Link to={`/categories/${index + 1}`}>
+                  <Card
                     sx={{
-                      position: "absolute",
-                      objectFit: "cover",
-                      width: "100%",
-                      height: "100%",
-                    }}
-                    image={category.image}
-                    alt={`image ${index + 1}`}
-                  />
-                  <CardContent
-                    sx={{
-                      position: "absolute",
-                      top: "10px",
-                      left: {
-                        xs: "-1",
-                        md: "10px",
-                      },
-                      color: "white",
-                      padding: "5px",
+                      height: { xs: "200px", sm: "250px" },
+                      width: { xs: "100%", sm: "200px" },
+                      position: "relative",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
-                    <Typography variant="h5">{category.name}</Typography>
-                  </CardContent>
-                </Card>
+                    <CardMedia
+                      component="img"
+                      sx={{
+                        position: "absolute",
+                        objectFit: "cover",
+                        width: "100%",
+                        height: "100%",
+                      }}
+                      image={category.image}
+                      alt={`image ${index + 1}`}
+                    />
+                    <CardContent
+                      sx={{
+                        position: "absolute",
+                        top: "10px",
+                        left: {
+                          xs: "-1",
+                          md: "10px",
+                        },
+                        color: "white",
+                        padding: "5px",
+                      }}
+                    >
+                      <Typography variant="h5">{category.name}</Typography>
+                    </CardContent>
+                  </Card>
+                </Link>
               </Grid>
             ))}
           </Grid>
