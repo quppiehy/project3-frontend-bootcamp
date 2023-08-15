@@ -46,7 +46,6 @@ function App() {
           <>
             {/* Unauthenticated route */}
             <Route path="/" element={<Auth />} />
-
             <Route path="/products/:productId" element={<Product />} />
           </>
         )}
