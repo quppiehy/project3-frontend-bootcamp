@@ -15,6 +15,7 @@ import "../styles/product.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useUserContext } from "../Components/UserContext";
 
 const Product = () => {
   const [productIndex, setProductIndex] = useState();
@@ -27,6 +28,44 @@ const Product = () => {
   const [photoDisplay, setPhotoDisplay] = useState();
   const [MainPhoto, setMainPhoto] = useState("");
   const [ratingValue, setRatingValue] = useState(null);
+  const [sellerDiscountPercentage, setSellerDiscountPercentage] = useState(0);
+  const [displayPrice, setDisplayPrice] = useState();
+  const { currUser, setCurrUser } = useUserContext();
+  const [sellerEmail, setSellerEmail] = useState();
+  const [uniqueChatroomId, setUniqueChatRoomId] = useState();
+
+  useEffect(() => {
+    console.log(currUser);
+    if (currUser === null) {
+      const localAccess = JSON.parse(localStorage.getItem("currUser"));
+      console.log(localAccess);
+      setCurrUser(localAccess);
+    }
+  }, [currUser]);
+
+  console.log(currUser);
+
+  useEffect(() => {
+    if (sellerDiscountPercentage === 0) {
+      setDisplayPrice(
+        <Typography variant="h6" component="div">
+          Price: <span style={{ color: "red" }}>${itemPricePerUnit}</span>
+        </Typography>
+      );
+    } else {
+      const priceAfterDiscount =
+        itemPricePerUnit * ((100 - sellerDiscountPercentage) / 100);
+      setDisplayPrice(
+        <Typography variant="h6" component="div">
+          Price:{" "}
+          <span style={{ textDecoration: "line-through" }}>
+            ${itemPricePerUnit}{" "}
+          </span>
+          <span style={{ color: "red" }}>${priceAfterDiscount}</span>
+        </Typography>
+      );
+    }
+  }, [sellerDiscountPercentage]);
 
   const param = useParams();
   if (productIndex !== param.productId) {
@@ -46,6 +85,8 @@ const Product = () => {
           setAvailableQuantity(data.quantity);
           setOverallPhotos(data.photos);
           setMainPhoto(data.photos[0].url);
+          setSellerDiscountPercentage(data.sellerDiscountId);
+          setSellerEmail(data.seller.email);
         })
         .catch((error) => {
           console.log(error);
@@ -56,10 +97,9 @@ const Product = () => {
   useEffect(() => {
     if (overallPhotos) {
       setPhotoDisplay(
-        overallPhotos.map((photos) => {
-          console.log(photos);
+        overallPhotos.map((photos, index) => {
           return (
-            <Box className="side-picture-container">
+            <Box key={index} className="side-picture-container">
               <Box
                 className="picture"
                 component="img"
@@ -107,6 +147,17 @@ const Product = () => {
     }
     setCurrentAmountChoice(requestedQuantity);
   };
+
+  //CONNIE THIS PART IS FOR YOU
+
+  useEffect(() => {
+    const productId = productIndex;
+    if (currUser && sellerEmail && productId) {
+      const uniqueId = currUser.userName + sellerEmail + String(productId);
+      console.log(uniqueId);
+      setUniqueChatRoomId(uniqueId);
+    }
+  });
   return (
     <div>
       <Grid container sx={{ display: "flex", flexDirection: "row" }}>
@@ -165,18 +216,17 @@ const Product = () => {
                       </Typography>
                     )}
                   </Box>
+                  <Box>
+                    <Button variant="text">Like this? ❤️</Button>
+                  </Box>
                 </Stack>
                 <Stack
                   direction="row"
-                  divider={<Divider orientation="vertical" flexItem />}
                   spacing={5}
                   sx={{ mt: 3 }}
                   justifyContent="space-between"
                 >
-                  <Typography variant="h6" component="div">
-                    Price:{" "}
-                    <span style={{ color: "red" }}>${itemPricePerUnit}</span>
-                  </Typography>
+                  {displayPrice}
                   <Button
                     variant="contained"
                     color="primary"
