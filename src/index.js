@@ -22,7 +22,7 @@ const AppWithAuth = () => {
 
   // After authentication, get the token and store it in local storage
   getAccessTokenSilently().then((token) => {
-    localStorage.setItem("access_token", token);
+    localStorage.setItem("Token", token);
   });
 
   return (

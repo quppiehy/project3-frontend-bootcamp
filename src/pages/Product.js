@@ -155,7 +155,7 @@ const Product = () => {
 
   socket.on("room_created", (room) => {
     console.log("New room created: ", room);
-    navigate("/chatroom", { state: { room } });
+    navigate("/chat");
   });
 
   useEffect(() => {
