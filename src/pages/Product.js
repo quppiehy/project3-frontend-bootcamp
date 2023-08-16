@@ -49,7 +49,10 @@ const Product = () => {
   }, [currUser]);
 
   useEffect(() => {
-    if (sellerDiscountPercentage === 0) {
+    if (
+      sellerDiscountPercentage === null ||
+      sellerDiscountPercentage === "null"
+    ) {
       setDisplayPrice(
         <Typography variant="h6" component="div">
           Price: <span style={{ color: "red" }}>${itemPricePerUnit}</span>
@@ -68,7 +71,7 @@ const Product = () => {
         </Typography>
       );
     }
-  }, [sellerDiscountPercentage]);
+  }, [sellerDiscountPercentage, itemPricePerUnit]);
 
   const param = useParams();
   if (productIndex !== param.productId) {
