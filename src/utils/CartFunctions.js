@@ -2,6 +2,9 @@ import axios from "axios";
 
 export const addToCart = async (id, quantityToBuy, currUserId) => {
   console.log("quantity to buy", quantityToBuy);
+  if (quantityToBuy === undefined) {
+    quantityToBuy = 1;
+  }
   console.log(
     "passed down productid, quantity, curruserid",
     id,
@@ -81,5 +84,19 @@ export const updateTotalOfCart = async (total, currentCartId) => {
     }
   } else {
     return false;
+  }
+};
+
+export const clearCart = async (currUserId) => {
+  console.log("clearing cart! hi");
+  try {
+    const response = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/products/cart/${currUserId}/update`
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error clearing cart:", error);
+    throw error;
   }
 };

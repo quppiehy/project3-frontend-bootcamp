@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import "./PaymentForm.css";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { clearCart } from "../utils/CartFunctions";
 
 const CARD_OPTIONS = {
   iconStyle: "solid",
@@ -75,7 +76,13 @@ export default function PaymentForm(props) {
         <div>
           <h2>The payment has been made and your order has been confirmed!</h2>
           <br />
-          <Button onClick={() => navigate("/")} variant="contained">
+          <Button
+            onClick={() => {
+              navigate("/");
+              clearCart(props.userId);
+            }}
+            variant="contained"
+          >
             Return to Homepage
           </Button>
         </div>
