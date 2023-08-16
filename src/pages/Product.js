@@ -11,11 +11,13 @@ import {
   Stack,
   Rating,
 } from "@mui/material";
-import "./Product.css";
-import { useParams } from "react-router-dom";
+import "../styles/product.css";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useUserContext } from "../Components/UserContext";
+import { useSocket } from "../Components/SocketContextProvider";
+import "../styles/chat.css";
 
 const Product = () => {
   const [productIndex, setProductIndex] = useState();
@@ -32,7 +34,10 @@ const Product = () => {
   const [displayPrice, setDisplayPrice] = useState();
   const { currUser, setCurrUser } = useUserContext();
   const [sellerEmail, setSellerEmail] = useState();
-  const [uniqueChatroomId, setUniqueChatRoomId] = useState();
+  const [chatRoomInfo, setChatRoomInfo] = useState({});
+  const [isNewRoomEmitted, setIsNewRoomEmitted] = useState(false);
+  const navigate = useNavigate();
+  const socket = useSocket();
 
   useEffect(() => {
     console.log(currUser);
@@ -42,8 +47,6 @@ const Product = () => {
       setCurrUser(localAccess);
     }
   }, [currUser]);
-
-  console.log(currUser);
 
   useEffect(() => {
     if (
@@ -151,16 +154,30 @@ const Product = () => {
     setCurrentAmountChoice(requestedQuantity);
   };
 
-  //CONNIE THIS PART IS FOR YOU
+  // For Chat Server Listener
+
+  socket.on("room_created", (room) => {
+    console.log("New room created: ", room);
+    navigate("/chatroom", { state: { room } });
+  });
 
   useEffect(() => {
     const productId = productIndex;
-    if (currUser && sellerEmail && productId) {
-      const uniqueId = currUser.userName + sellerEmail + String(productId);
-      console.log(uniqueId);
-      setUniqueChatRoomId(uniqueId);
+    if (currUser && productId) {
+      const info = { productId: productId, userId: currUser.id };
+      setChatRoomInfo(info);
     }
-  });
+  }, [currUser, productIndex]);
+
+  const joinRoom = () => {
+    if (!isNewRoomEmitted && chatRoomInfo != null) {
+      console.log(chatRoomInfo);
+      console.log(`Sending info to backend: ${chatRoomInfo}`);
+      socket.emit("new_room", chatRoomInfo);
+      setIsNewRoomEmitted(true);
+    }
+  };
+
   return (
     <div>
       <Grid container sx={{ display: "flex", flexDirection: "row" }}>
@@ -234,6 +251,8 @@ const Product = () => {
                     variant="contained"
                     color="primary"
                     sx={{ ml: "10vw" }}
+                    onClick={joinRoom}
+                    disabled={isNewRoomEmitted}
                   >
                     Contact Seller
                   </Button>
