@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -19,59 +19,187 @@ import {
   MenuItem,
 } from "@mui/material";
 import BasePlaceholder from "../images/280x280.svg";
+import { useUserContext } from "../Components/UserContext";
+import Swal from "sweetalert2";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
+import { storage } from "../firebase";
+import axios from "axios";
+
+const STORAGE_KEY = "images/";
 
 function UploadProduct() {
   const [productName, setProductName] = useState("");
-  const [productPricePerUnit, setProductPricePerUnit] = useState();
-  const [productDescription, setProductDescription] = useState();
+  const [productPricePerUnit, setProductPricePerUnit] = useState("");
+  const [productDescription, setProductDescription] = useState("");
   const [productCategory, setProductCategory] = useState("");
-  const [productQuantity, setProductQuantity] = useState();
+  const [productQuantity, setProductQuantity] = useState("");
   const [productDiscount, setProductDiscount] = useState("false");
   const [productDiscountAmount, setProductDiscountAmount] = useState(1);
-  const [uploadPicture1, setUploadPicture1] = useState(BasePlaceholder);
-  const [uploadPicture2, setUploadPicture2] = useState(BasePlaceholder);
-  const [uploadPicture3, setUploadPicture3] = useState(BasePlaceholder);
-  const [uploadPicture4, setUploadPicture4] = useState(BasePlaceholder);
+  const [uploadPicture1Preview, setUploadPicture1Preview] =
+    useState(BasePlaceholder);
+  const [uploadPicture2Preview, setUploadPicture2Preview] =
+    useState(BasePlaceholder);
+  const [uploadPicture3Preview, setUploadPicture3Preview] =
+    useState(BasePlaceholder);
+  const [uploadPicture4Preview, setUploadPicture4Preview] =
+    useState(BasePlaceholder);
+  const [fileAdded1, setFileAdded1] = useState(null);
+  const [fileAdded2, setFileAdded2] = useState(null);
+  const [fileAdded3, setFileAdded3] = useState(null);
+  const [fileAdded4, setFileAdded4] = useState(null);
+  const [fileValue1, setFileValue1] = useState("");
+  const [fileValue2, setFileValue2] = useState("");
+  const [fileValue3, setFileValue3] = useState("");
+  const [fileValue4, setFileValue4] = useState("");
+  const { currUser, setCurrUser } = useUserContext();
 
-  const handleUploadPicture1 = (event) => {
-    const file = event.target.files[0];
+  useEffect(() => {
+    console.log(currUser);
+    if (currUser === null) {
+      const localAccess = JSON.parse(localStorage.getItem("currUser"));
+      console.log(localAccess);
+      setCurrUser(localAccess);
+    }
+  }, [currUser]);
+
+  console.log(currUser);
+
+  const handleUploadPicture1 = (e) => {
+    const file = e.target.files[0];
+    setFileAdded1(file);
+    setFileValue1(e.target.value);
     const reader = new FileReader();
     reader.onloadend = () => {
-      setUploadPicture1(reader.result);
+      setUploadPicture1Preview(reader.result);
     };
     reader.readAsDataURL(file);
   };
 
-  const handleUploadPicture2 = (event) => {
-    const file = event.target.files[0];
+  const handleUploadPicture2 = (e) => {
+    const file = e.target.files[0];
+    setFileAdded2(file);
+    setFileValue2(e.target.value);
     const reader = new FileReader();
     reader.onloadend = () => {
-      setUploadPicture2(reader.result);
+      setUploadPicture2Preview(reader.result);
     };
     reader.readAsDataURL(file);
   };
 
-  const handleUploadPicture3 = (event) => {
-    const file = event.target.files[0];
+  const handleUploadPicture3 = (e) => {
+    const file = e.target.files[0];
+    setFileAdded3(file);
+    setFileValue3(e.target.value);
     const reader = new FileReader();
     reader.onloadend = () => {
-      setUploadPicture3(reader.result);
+      setUploadPicture3Preview(reader.result);
     };
     reader.readAsDataURL(file);
   };
-  const handleUploadPicture4 = (event) => {
-    const file = event.target.files[0];
+  const handleUploadPicture4 = (e) => {
+    const file = e.target.files[0];
+    setFileAdded4(file);
+    setFileValue4(e.target.value);
     const reader = new FileReader();
     reader.onloadend = () => {
-      setUploadPicture4(reader.result);
+      setUploadPicture4Preview(reader.result);
     };
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(uploadPicture1, uploadPicture2, uploadPicture3, uploadPicture4);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (
+      !fileAdded1 ||
+      !productName ||
+      !productPricePerUnit ||
+      !productDescription ||
+      !productCategory
+    ) {
+      Swal.fire({
+        title: "Error!",
+        text: "You need to populate all fields and make sure you have at least uploaded the main picture!",
+        icon: "error",
+        confirmButtonText: "Proceed",
+      });
+      return;
+    }
+    const uploadPictureFunction = async (file, name) => {
+      return new Promise(async (resolve, reject) => {
+        const fullStorageRef = storageRef(storage, STORAGE_KEY + name);
+        await uploadBytes(fullStorageRef, file).then(() => {
+          getDownloadURL(fullStorageRef)
+            .then((url) => {
+              resolve(url);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
+      });
+    };
+
+    const uploadPromises = [uploadPictureFunction(fileAdded1, fileAdded1.name)];
+    if (fileAdded2) {
+      console.log("upload pic2");
+      uploadPromises.push(uploadPictureFunction(fileAdded2, fileAdded2.name));
+    }
+
+    if (fileAdded3) {
+      console.log("upload pic3");
+      uploadPromises.push(uploadPictureFunction(fileAdded3, fileAdded3.name));
+    }
+
+    if (fileAdded4) {
+      console.log("upload pic4");
+      uploadPromises.push(uploadPictureFunction(fileAdded4, fileAdded4.name));
+    }
+
+    Promise.all(uploadPromises).then((downloadLinks) => {
+      console.log(downloadLinks);
+      const sellerId = currUser.id;
+      let sellerDiscountId;
+      if (productDiscount === "false") {
+        sellerDiscountId = null;
+      } else {
+        sellerDiscountId = productDiscountAmount;
+      }
+      const dataToSend = {
+        sellerId: sellerId,
+        sellerDiscountId: sellerDiscountId,
+        title: productName,
+        price: productPricePerUnit,
+        description: productDescription,
+        categoryId: productCategory,
+        quantity: productQuantity,
+        photos: downloadLinks,
+      };
+
+      axios
+        .post(`${process.env.REACT_APP_BACKEND_URL}/products/`, {
+          ...dataToSend,
+        })
+        .then((info) => {
+          console.log(info);
+          setFileAdded1(null);
+          setFileAdded2(null);
+          setFileAdded3(null);
+          setFileAdded4(null);
+          setFileValue1("");
+          setFileValue2("");
+          setFileValue3("");
+          setFileValue4("");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
   };
+
   return (
     <>
       <Box>
@@ -304,8 +432,13 @@ function UploadProduct() {
         <Stack direction="row" sx={{ mt: 9 }} justifyContent="space-around">
           <Box>
             <Stack direction="column" spacing={2}>
-              {uploadPicture1 && (
-                <img src={uploadPicture1} alt="Pic" height="280" width="280" />
+              {uploadPicture1Preview && (
+                <img
+                  src={uploadPicture1Preview}
+                  alt="Pic"
+                  height="280"
+                  width="280"
+                />
               )}
               <label>
                 <Button
@@ -326,8 +459,13 @@ function UploadProduct() {
           </Box>
           <Box>
             <Stack direction="column" spacing={2}>
-              {uploadPicture2 && (
-                <img src={uploadPicture2} alt="Pic" height="280" width="280" />
+              {uploadPicture2Preview && (
+                <img
+                  src={uploadPicture2Preview}
+                  alt="Pic"
+                  height="280"
+                  width="280"
+                />
               )}
               <label>
                 <Button
@@ -346,10 +484,17 @@ function UploadProduct() {
               </label>
             </Stack>
           </Box>
+        </Stack>
+        <Stack direction="row" sx={{ mt: 9 }} justifyContent="space-around">
           <Box>
             <Stack direction="column" spacing={2}>
-              {uploadPicture3 && (
-                <img src={uploadPicture3} alt="Pic" height="280" width="280" />
+              {uploadPicture3Preview && (
+                <img
+                  src={uploadPicture3Preview}
+                  alt="Pic"
+                  height="280"
+                  width="280"
+                />
               )}
               <label>
                 <Button
@@ -370,8 +515,13 @@ function UploadProduct() {
           </Box>
           <Box>
             <Stack direction="column" spacing={2}>
-              {uploadPicture4 && (
-                <img src={uploadPicture4} alt="Pic" height="280" width="280" />
+              {uploadPicture4Preview && (
+                <img
+                  src={uploadPicture4Preview}
+                  alt="Pic"
+                  height="280"
+                  width="280"
+                />
               )}
               <label>
                 <Button

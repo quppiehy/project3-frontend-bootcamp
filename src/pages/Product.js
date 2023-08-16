@@ -18,6 +18,8 @@ import Swal from "sweetalert2";
 import { useUserContext } from "../Components/UserContext";
 import { useSocket } from "../Components/SocketContextProvider";
 import "../styles/chat.css";
+import { addToCart } from "../utils/CartFunctions";
+import Review from "../pages/Review"
 
 const Product = () => {
   const [productIndex, setProductIndex] = useState();
@@ -49,7 +51,10 @@ const Product = () => {
   }, [currUser]);
 
   useEffect(() => {
-    if (sellerDiscountPercentage === 0) {
+    if (
+      sellerDiscountPercentage === null ||
+      sellerDiscountPercentage === "null"
+    ) {
       setDisplayPrice(
         <Typography variant="h6" component="div">
           Price: <span style={{ color: "red" }}>${itemPricePerUnit}</span>
@@ -64,11 +69,11 @@ const Product = () => {
           <span style={{ textDecoration: "line-through" }}>
             ${itemPricePerUnit}{" "}
           </span>
-          <span style={{ color: "red" }}>${priceAfterDiscount}</span>
+          <span style={{ color: "red" }}>${priceAfterDiscount.toFixed(2)}</span>
         </Typography>
       );
     }
-  }, [sellerDiscountPercentage]);
+  }, [sellerDiscountPercentage, itemPricePerUnit]);
 
   const param = useParams();
   if (productIndex !== param.productId) {
@@ -289,7 +294,14 @@ const Product = () => {
           </Button>
           <Divider sx={{ mt: "20px", mb: "20px" }} />
 
-          <Button variant="contained" color="primary" sx={{ ml: "8vw" }}>
+          <Button
+            onClick={() =>
+              addToCart(productIndex, currentAmountChoice, currUser.id)
+            }
+            variant="contained"
+            color="primary"
+            sx={{ ml: "8vw" }}
+          >
             Add to Cart!
           </Button>
           <Divider sx={{ mt: "20px", mb: "20px" }} />
@@ -307,6 +319,7 @@ const Product = () => {
               </Typography>
             </Grid>
           </Grid>
+          <Review/>
           <Divider sx={{ mt: "20px", mb: "20px" }} />
         </Box>
       </Grid>

@@ -48,7 +48,7 @@ const Homepage = () => {
       title: "etc",
       description: "etc",
       price: "etc",
-      productId: 0,
+      id: 0,
     },
     {
       photos: [
@@ -59,7 +59,7 @@ const Homepage = () => {
       title: "etc",
       description: "etc",
       price: "etc",
-      productId: 0,
+      id: 0,
     },
     {
       photos: [
@@ -70,7 +70,7 @@ const Homepage = () => {
       title: "etc",
       description: "etc",
       price: "etc",
-      productId: 0,
+      id: 0,
     },
   ]);
 
@@ -86,7 +86,7 @@ const Homepage = () => {
           title: deal1.title,
           description: deal1.description,
           price: deal1.price,
-          productId: deal1.id,
+          id: deal1.id,
         },
         {
           photos: [
@@ -97,7 +97,7 @@ const Homepage = () => {
           title: deal2.title,
           description: deal2.description,
           price: deal2.price,
-          productId: deal2.id,
+          id: deal2.id,
         },
         {
           photos: [
@@ -108,7 +108,7 @@ const Homepage = () => {
           title: deal3.title,
           description: deal3.description,
           price: deal3.price,
-          productId: deal3.id,
+          id: deal3.id,
         },
       ]);
     }
@@ -318,11 +318,14 @@ const Homepage = () => {
         </Typography>
         <Box sx={{ p: "20px 5% 0 5%", margin: "0" }}>
           <Grid container spacing={2}>
-            {deals.map((product, index) => (
-              <Grid item xs={6} md={4} key={index}>
-                <ProductCard product={product} />
-              </Grid>
-            ))}
+            {deals.map((product, index) => {
+              console.log("product is", product);
+              return (
+                <Grid item xs={6} md={4} key={index}>
+                  <ProductCard product={product} />
+                </Grid>
+              );
+            })}
           </Grid>
         </Box>
       </Box>

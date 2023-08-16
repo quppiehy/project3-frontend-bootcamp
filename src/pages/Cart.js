@@ -2,46 +2,92 @@ import { Box, Button, Typography } from "@mui/material";
 import HomepodMini from "../images/deals-homepodmini.png";
 import InstaxMini9 from "../images/deals-instaxmini9.png";
 import BaseCampDuffelM from "../images/deals-basecampduffelm.png";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "../Components/ProductCard";
+import { updateTotalOfCart } from "../utils/CartFunctions";
+import { useUserContext } from "../Components/UserContext";
+import axios from "axios";
 
 const Cart = () => {
-  const products = [
-    {
-      photos: [
-        {
-          url: HomepodMini,
-        },
-      ],
-      title: "HomePod mini",
-      description: "Table with air purifier, stained veneer/black",
-      price: 239.0,
-      stars: 121,
-    },
-    {
-      photos: [
-        {
-          url: InstaxMini9,
-        },
-      ],
-      title: "Instax Mini 9",
-      description: "Selfie mode and selfie mirror, Macro mode",
-      price: 239.0,
-      stars: 121,
-    },
-    {
-      photos: [
-        {
-          url: BaseCampDuffelM,
-        },
-      ],
-      title: "Base Camp Duffel M",
-      description: "Table with air purifier, stained veneer/black",
-      price: 239.0,
-      stars: 121,
-    },
-  ];
+  const { currUser, setCurrUser } = useUserContext();
+  const [productsInCart, setProductsInCart] = useState([]);
 
+  useEffect(() => {
+    if (!currUser) {
+      const localAccess = JSON.parse(localStorage.getItem("currUser"));
+      setCurrUser(localAccess);
+      console.log(currUser);
+    }
+  }, [currUser, setCurrUser]);
+
+  useEffect(() => {
+    //http://localhost:8080/products/cart/11
+    getProductsInCart();
+  }, []);
+
+  const getProductsInCart = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/products/cart/${currUser.id}`
+      );
+      console.log("Response", response.data);
+      setProductsInCart(response.data);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
+
+  const handleProductUpdate = () => {
+    getProductsInCart();
+  };
+
+  const calculatePreDiscountTotal = () => {
+    if (productsInCart.length < 0) {
+      return 0;
+    } else {
+      return productsInCart
+        .reduce((total, product) => {
+          return total + parseFloat(product.product.price) * product.quantity;
+        }, 0)
+        .toFixed(2);
+    }
+  };
+
+  const calculatePostDiscountTotal = () => {
+    if (productsInCart.length < 0) {
+      return 0;
+    } else {
+      return productsInCart
+        .reduce((total, product) => {
+          const price = parseFloat(product.product.price);
+          const discountAmount = product.product.seller_discount
+            ? parseFloat(product.product.seller_discount.discountAmount)
+            : 0;
+          return total + (price - price * discountAmount) * product.quantity;
+        }, 0)
+        .toFixed(2);
+    }
+  };
+
+  const calculateGST = () => {
+    if (productsInCart.length < 0) {
+      return 0;
+    } else {
+      return (parseFloat(calculatePostDiscountTotal()) * 0.08).toFixed(2);
+    }
+  };
+
+  const calculateTotal = () => {
+    if (productsInCart.length < 0) {
+      return 0;
+    } else {
+      return (
+        parseFloat(calculatePostDiscountTotal()) + parseFloat(calculateGST())
+      ).toFixed(2);
+    }
+  };
+
+  console.log("cartid");
   return (
     <>
       <Typography variant="h3" sx={{ py: "20px", textAlign: "center" }}>
@@ -56,11 +102,12 @@ const Cart = () => {
                 flexDirection: "column",
               }}
             >
-              {products.map((product, index) => (
+              {productsInCart.map((product, index) => (
                 <ProductCard
-                  cart={true}
-                  quantity={20}
-                  product={product}
+                  cart={product.currentCartId}
+                  quantity={product.quantity}
+                  product={product.product}
+                  onProductUpdate={handleProductUpdate}
                   key={index}
                 />
               ))}
@@ -68,9 +115,25 @@ const Cart = () => {
           </Box>
         </Box>
         <Box>
-          <Typography>Subtotal: 30$</Typography>
-          <Typography>GST 8%: 2.4$</Typography>
-          <Button variant="contained">Check Out</Button>
+          <Typography>
+            Total Before Discounts: ${calculatePreDiscountTotal()}
+          </Typography>
+          <Typography>
+            Total After Discounts: ${calculatePostDiscountTotal()}
+          </Typography>
+          <Typography>GST 8%: ${calculateGST()}</Typography>
+          <Typography>Total: ${calculateTotal()}</Typography>
+          <Button
+            variant="contained"
+            onClick={() =>
+              updateTotalOfCart(
+                calculateTotal(),
+                productsInCart[0].currentCartId
+              )
+            }
+          >
+            Check Out Cart
+          </Button>
         </Box>
       </Box>
     </>
