@@ -130,6 +130,7 @@ const Cart = () => {
                 calculateTotal(),
                 productsInCart[0].currentCartId
               )
+              
             }
           >
             Check Out Cart
