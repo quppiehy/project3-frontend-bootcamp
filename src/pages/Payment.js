@@ -76,7 +76,9 @@ function Payment() {
 
   return (
     <>
-      <Typography variant="h3">Current Cart</Typography>
+      <Typography variant="h3" sx={{ mt: 10 }}>
+        Current Cart
+      </Typography>
       {overallPrice ? (
         <Typography variant="h4">Total Cart Price: ${overallPrice}</Typography>
       ) : (
