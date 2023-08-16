@@ -7,10 +7,13 @@ import ProductCard from "../Components/ProductCard";
 import { updateTotalOfCart } from "../utils/CartFunctions";
 import { useUserContext } from "../Components/UserContext";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const { currUser, setCurrUser } = useUserContext();
   const [productsInCart, setProductsInCart] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!currUser) {
@@ -125,13 +128,13 @@ const Cart = () => {
           <Typography>Total: ${calculateTotal()}</Typography>
           <Button
             variant="contained"
-            onClick={() =>
+            onClick={() => {
               updateTotalOfCart(
                 calculateTotal(),
                 productsInCart[0].currentCartId
-              )
-              
-            }
+              );
+              navigate("/payment");
+            }}
           >
             Check Out Cart
           </Button>

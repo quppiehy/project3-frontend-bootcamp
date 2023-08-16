@@ -218,8 +218,14 @@ const Homepage = () => {
   }, []);
 
   useEffect(() => {
-    console.log(deal1);
+    console.log("deal1", deal1);
   }, [deal1]);
+  useEffect(() => {
+    console.log("deal2", deal3);
+  }, [deal2]);
+  useEffect(() => {
+    console.log("deal3", deal3);
+  }, [deal3]);
   return (
     <>
       {/* Hero */}

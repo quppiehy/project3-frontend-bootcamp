@@ -45,7 +45,7 @@ const ProductCard = ({
   return (
     <Box>
       <Card sx={{ width: "100%", height: "100%" }}>
-        <Link to={`/products/${product.productId}`}>
+        <Link to={`/products/${product.id}`}>
           <CardMedia
             sx={{ height: 300, objectFit: "cover" }}
             image={

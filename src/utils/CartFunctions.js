@@ -17,7 +17,7 @@ export const addToCart = async (id, quantityToBuy, currUserId) => {
     const UpdateCurrentCartProducts = {
       currentCartId: response.data,
       productId: id,
-      quantity: 1,
+      quantity: quantityToBuy,
     };
 
     await axios.post(

@@ -18,6 +18,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Category from "./pages/Category";
 import UploadProduct from "./pages/UploadProduct";
 import ChatRoom from "./Components/ChatRoom";
+import Chat from "./pages/Chat";
 
 function App() {
   const { isAuthenticated } = useAuth0();
@@ -37,6 +38,7 @@ function App() {
             <Route path="/deals" element={<Deals />} />
             <Route path="/delivery" element={<Delivery />} />
             <Route path="/products/:productId" element={<Product />} />
+            <Route path="/chat" element={<Chat />} />
             <Route path="/chatroom" element={<ChatRoom />} />
             <Route path="/firebaseUpload" element={<FirebaseUpload />} />
             <Route path="/payment" element={<Payment />} />
