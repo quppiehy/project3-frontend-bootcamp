@@ -45,28 +45,35 @@ const ProductCard = ({
   return (
     <Box>
       <Card sx={{ width: "100%", height: "100%" }}>
-        <CardMedia
-          sx={{ height: 300, objectFit: "cover" }}
-          image={
-            product.photos
-              ? product.photos[0].url
-              : "https://hinacreates.com/wp-content/uploads/2021/06/dummy2-450x341.png"
-          }
-          title={product.title + product.id}
-        />
+        <Link to={`/products/${product.productId}`}>
+          <CardMedia
+            sx={{ height: 300, objectFit: "cover" }}
+            image={
+              product.photos
+                ? product.photos[0].url
+                : "https://hinacreates.com/wp-content/uploads/2021/06/dummy2-450x341.png"
+            }
+            title={product.title + product.id}
+          />
+        </Link>
         <CardContent>
-          <Typography
-            gutterBottom
-            variant="h5"
-            component="div"
-            sx={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
+          <Link
+            style={{ color: "#013d29" }}
+            to={`/products/${product.productId}`}
           >
-            {product.title}
-          </Typography>
+            <Typography
+              gutterBottom
+              variant="h5"
+              component="div"
+              sx={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {product.title}
+            </Typography>
+          </Link>
           <Typography variant="h6" component="div" gutterBottom>
             ${product.price}
           </Typography>
