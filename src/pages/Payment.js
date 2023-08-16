@@ -12,83 +12,79 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
+  Grid,
 } from "@mui/material";
 import { Directions } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
+import StripeContainer from "../Components/StripeContainer";
+import { useUserContext } from "../Components/UserContext";
+import axios from "axios";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 function Payment() {
   const [overallPrice, setOverallPrice] = useState(0);
-  const [couponCode, setCouponCode] = useState("");
+  const [openPaymentBar, setOpenPaymentBar] = useState(false);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState("COD");
-  const itemsCart = [
-    {
-      name: "iPhone 4S",
-      description: "apple product",
-      quantity: 2,
-      price: 395.75,
-    },
-    {
-      name: "iPhone X",
-      description: "apple product",
-      quantity: 3,
-      price: 891.99,
-    },
-  ];
+  const { currUser, setCurrUser } = useUserContext();
+  const [loadedStatus, setLoadedStatus] = useState(false);
 
-  const calculateTotalPrice = (cart) => {
-    let totalPrice = 0;
-    for (const item of cart) {
-      totalPrice += item.price * item.quantity;
-    }
-    return totalPrice;
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setOverallPrice(calculateTotalPrice(itemsCart));
-  }, []);
+    if (currUser) {
+      axios
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/products/cart/total/${currUser.id}`
+        )
+        .then((info) => {
+          console.log(info);
+          setOverallPrice(info.data[0].totalPrice);
+        })
+        .catch((erro) => {
+          console.log(erro);
+        });
+    } else {
+      return;
+    }
+  }, [loadedStatus]);
+
+  useEffect(() => {
+    console.log(currUser);
+    if (currUser === null) {
+      const localAccess = JSON.parse(localStorage.getItem("currUser"));
+      console.log(localAccess);
+      setCurrUser(localAccess);
+      setLoadedStatus(true);
+    }
+  }, [currUser]);
 
   const changePaymentOption = (event) => {
     setSelectedPaymentOption(event.target.value);
   };
 
+  const codCheckout = (e) => {
+    e.preventDefault();
+    Swal.fire({
+      title: "Success",
+      text: "Your order has been confirmed, the Seller will contact you",
+      icon: "success",
+      confirmButtonText: "Proceed",
+    });
+    navigate("/");
+  };
+
   return (
     <>
-      <Typography variant="h3">Current Cart</Typography>
-      <Box>
-        {itemsCart.map((item, i) => (
-          <Box sx={{ display: "flex", flexDirection: "row", py: "20px" }}>
-            <Link href="./products/1" target="_blank" rel="noopener">
-              <Box sx={{ width: "200px" }}>
-                <img
-                  alt={i}
-                  className="product-img"
-                  src="https://hinacreates.com/wp-content/uploads/2021/06/dummy2-450x341.png"
-                ></img>
-              </Box>
-              <br />
-              <Divider variant="middle" />
-            </Link>
-
-            <Box>
-              <Typography>{item.name}</Typography>
-              <Typography>Quantity: {item.quantity}</Typography>
-              <Typography>
-                Description:
-                {item.description?.split(" ").slice(0, 15).join(" ")}
-              </Typography>
-              <Typography>Price: ${item.price.toFixed(2)}</Typography>
-              <Box sx={{ paddingTop: "20px" }}>
-                <Button variant="outlined">Delete item</Button>
-              </Box>
-              <br />
-              <Divider variant="middle" />
-            </Box>
-          </Box>
-        ))}
-      </Box>
-      <Typography variant="h4">
-        Total Cart Price: ${overallPrice.toFixed(2)}
+      <Typography variant="h3" sx={{ mt: 10 }}>
+        Current Cart
       </Typography>
+      {overallPrice ? (
+        <Typography variant="h4">Total Cart Price: ${overallPrice}</Typography>
+      ) : (
+        <Typography variant="h4">Total Cart Price:</Typography>
+      )}
+
       <br />
       <Divider variant="middle" />
       <br />
@@ -97,16 +93,13 @@ function Payment() {
         component="form"
         sx={{ p: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
       >
-        <IconButton sx={{ padding: "10px" }} aria-label="menu"></IconButton>
+        <Typography variant="h6">Coupon Code:</Typography>
         <InputBase
           sx={{ marginLeft: 1, flex: 1 }}
           placeholder="Coupon Code Here"
         />
-
         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-        <IconButton color="primary" sx={{ p: "10px" }} aria-label="directions">
-          <Directions />
-        </IconButton>
+        <Directions />
       </Paper>
       <br />
       <Divider variant="middle" />
@@ -132,14 +125,24 @@ function Payment() {
       </FormControl>
       <br />
       {selectedPaymentOption === "CDC" ? (
-        <Button variant="contained" size="large">
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => setOpenPaymentBar(true)}
+        >
           Checkout
         </Button>
       ) : (
-        <Button variant="outlined" size="large">
-          Proceed to Payment
+        <Button variant="outlined" size="large" onClick={codCheckout}>
+          Cash-On-Delivery Checkout
         </Button>
       )}
+      <Divider sx={{ mt: 3, mb: 3 }} />
+      <Grid container justifyContent="center" flexDirection="row">
+        <Grid item sx={{ width: "50%" }}>
+          {openPaymentBar ? <StripeContainer cost={overallPrice} /> : null}
+        </Grid>
+      </Grid>
     </>
   );
 }
