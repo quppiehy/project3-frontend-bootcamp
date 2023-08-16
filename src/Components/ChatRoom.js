@@ -1,19 +1,65 @@
 import React, { useState, useEffect } from "react";
 import ScrollToBottom from "react-scroll-to-bottom";
+import { useLocation } from "react-router";
+import { useUserContext } from "./UserContext";
+import { useSocket } from "./SocketContextProvider";
 
-function ChatRoom({ socket, username, room }) {
+function ChatRoom() {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
   const [chatDate, setChatDate] = useState("");
+  const [time, setTime] = useState("");
+  const location = useLocation();
+  const { room } = location.state || {};
+  const { currUser, setCurrUser } = useUserContext();
+  const [username, setUsername] = useState("");
+  const [showChat, setShowChat] = useState(false);
+
+  const socket = useSocket();
+
+  useEffect(() => {
+    console.log(room);
+    if (room !== "") {
+      console.log(`Joining Room: ${room}`);
+      getDateTime();
+      socket.emit("join_room", room.id);
+    }
+    setShowChat(true);
+  }, [room]);
+
+  useEffect(() => {
+    console.log(currUser);
+    if (currUser === null) {
+      const localAccess = JSON.parse(localStorage.getItem("currUser"));
+      console.log(localAccess);
+      setCurrUser(localAccess);
+    }
+  }, [currUser]);
+
+  const getDateTime = () => {
+    const dateString = room.createdAt;
+    const date = dateString.slice(0, 10);
+    setChatDate(date);
+    const time = dateString.slice(11, 16);
+    setTime(time);
+  };
+
+  useEffect(() => {
+    console.log(chatDate);
+  }, [chatDate]);
+
+  useEffect(() => {
+    console.log(time);
+  });
 
   const sendMessage = async () => {
     if (currentMessage !== "") {
       const messageData = {
-        room: room, //prodId+userId
-        author: username,
+        room: room.id,
+        author: currUser.userName,
         content: currentMessage,
-        prodId: 3,
-        userId: 4,
+        prodId: room.productId,
+        userId: room.userId,
         time:
           new Date(Date.now()).getHours() +
           ":" +
@@ -26,14 +72,14 @@ function ChatRoom({ socket, username, room }) {
     }
   };
 
-  useEffect(() => {
-    const currentDate = new Date();
-    const day = String(currentDate.getDate()).padStart(2, "0");
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const year = currentDate.getFullYear();
-    const formattedDate = `${day}/${month}/${year}`;
-    setChatDate(formattedDate);
-  }, []);
+  // useEffect(() => {
+  //   const currentDate = new Date();
+  //   const day = String(currentDate.getDate()).padStart(2, "0");
+  //   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  //   const year = currentDate.getFullYear();
+  //   const formattedDate = `${day}/${month}/${year}`;
+  //   setChatDate(formattedDate);
+  // }, []);
 
   useEffect(() => {
     socket.on("receive_message", (data) => {

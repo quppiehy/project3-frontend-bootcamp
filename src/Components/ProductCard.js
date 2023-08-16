@@ -5,6 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import { Box, Button, Typography } from "@mui/material";
 import ReviewProduct from "./ReviewProduct";
+import { Link } from "react-router-dom";
 import {
   addToCart,
   updateQuantityOfProduct,
@@ -23,9 +24,9 @@ const ProductCard = ({
 
   const [open, setOpen] = useState(false);
   const [quantityToBuy, setQuantityToBuy] = useState(quantity);
-
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  console.log(product);
 
   useEffect(() => {
     if (!currUser) {

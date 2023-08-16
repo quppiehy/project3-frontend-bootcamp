@@ -22,7 +22,13 @@ function Auth0() {
       <Grid item>
         <Button
           disableRipple
-          onClick={() => loginWithRedirect()}
+          onClick={() =>
+            loginWithRedirect({
+              authorizationParams: {
+                redirect_uri: `${process.env.REACT_APP_REDIRECT_URI}`,
+              },
+            })
+          }
           style={{
             cursor: "pointer",
             display: "inline-flex",

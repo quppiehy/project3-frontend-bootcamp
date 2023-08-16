@@ -1,36 +1,70 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
+import React, { useEffect } from "react";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  Container,
+  Button,
+  Tooltip,
+  MenuItem,
+  Menu,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import SearchIcon from "@mui/icons-material/Search";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Saja from "../images/saja.png";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useUserContext } from "../Components/UserContext";
 
 const pages = ["Categories", "Deals", "Delivery"];
-const settings = [
-  "Profile",
-  "Account",
-  "Dashboard",
-  "Past Orders",
-  "Chat",
-  "Logout",
-];
+const settings = ["Profile", "Chat", "Past Orders", "Logout"];
+const settingsNotUser = ["Login/Signup"];
 
 function Navbar() {
-  const { logout } = useAuth0();
+  const { logout, loginWithRedirect } = useAuth0();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const { currUser, setCurrUser } = useUserContext();
+  const navigate = useNavigate();
+
+  // to retrieve currUser from local storage and to set it for context
+  useEffect(() => {
+    console.log(currUser);
+    if (currUser === null) {
+      const localAccess = JSON.parse(localStorage.getItem("currUser"));
+      console.log(localAccess);
+      setCurrUser(localAccess);
+    }
+  }, [currUser]);
+
+  // checks if user is logged in or not to display user menu
+  const login = currUser !== null ? true : false;
+
+  // handle user menu click
+  const handleUserMenu = (page) => {
+    if (page === "Logout") {
+      logout({ returnTo: process.env.REACT_APP_REDIRECT_URI });
+      setAnchorElUser(null);
+      setCurrUser(null);
+      localStorage.removeItem("Token");
+      localStorage.removeItem("currUser");
+    } else if (page === "Login/Signup") {
+      setAnchorElUser(null);
+      loginWithRedirect({
+        authorizationParams: {
+          redirect_uri: `${process.env.REACT_APP_REDIRECT_URI}`,
+        },
+      });
+    } else if (page === "Past Orders") {
+      navigate("pastorders");
+    } else {
+      navigate(`${page.toLowerCase()}`);
+    }
+  };
 
   return (
     <AppBar position="static">
@@ -140,26 +174,23 @@ function Navbar() {
               open={Boolean(anchorElUser)}
               onClose={() => setAnchorElUser(null)}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={() => setAnchorElUser(null)}>
-                  {/* Render the logout button with Auth0 logout functionality */}
-
-                  {setting === "Logout" ? (
-                    <Button
-                      onClick={() =>
-                        logout({ returnTo: process.env.REACT_APP_REDIRECT_URI })
-                      }
-                      color="inherit"
+              {login
+                ? settings.map((setting) => (
+                    <MenuItem
+                      key={setting}
+                      onClick={() => handleUserMenu(setting)}
                     >
-                      Logout
-                    </Button>
-                  ) : (
-                    <Link to={setting.toLowerCase()} key={setting}>
                       <Typography textAlign="center">{setting}</Typography>
-                    </Link>
-                  )}
-                </MenuItem>
-              ))}
+                    </MenuItem>
+                  ))
+                : settingsNotUser.map((setting) => (
+                    <MenuItem
+                      key={setting}
+                      onClick={() => handleUserMenu(setting)}
+                    >
+                      <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+                  ))}
             </Menu>
           </Box>
         </Toolbar>
