@@ -2,6 +2,8 @@ import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import axios from "axios";
 import React, { useState } from "react";
 import "./PaymentForm.css";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const CARD_OPTIONS = {
   iconStyle: "solid",
@@ -27,6 +29,9 @@ export default function PaymentForm(props) {
   const [success, setSuccess] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
+
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { error, paymentMethod } = await stripe.createPaymentMethod({
@@ -64,11 +69,15 @@ export default function PaymentForm(props) {
               <CardElement options={CARD_OPTIONS} />
             </div>
           </fieldset>
-          <button>Pay</button>
+          <button className="buttonForStripe">Pay</button>
         </form>
       ) : (
         <div>
-          <h2>Payment has been made!</h2>
+          <h2>The payment has been made and your order has been confirmed!</h2>
+          <br />
+          <Button onClick={() => navigate("/")} variant="contained">
+            Return to Homepage
+          </Button>
         </div>
       )}
     </>
