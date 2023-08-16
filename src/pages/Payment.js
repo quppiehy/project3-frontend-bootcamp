@@ -21,6 +21,7 @@ import { useUserContext } from "../Components/UserContext";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { clearCart } from "../utils/CartFunctions";
 
 function Payment() {
   const [overallPrice, setOverallPrice] = useState(0);
@@ -71,6 +72,7 @@ function Payment() {
       icon: "success",
       confirmButtonText: "Proceed",
     });
+
     navigate("/");
   };
 
@@ -140,7 +142,9 @@ function Payment() {
       <Divider sx={{ mt: 3, mb: 3 }} />
       <Grid container justifyContent="center" flexDirection="row">
         <Grid item sx={{ width: "50%" }}>
-          {openPaymentBar ? <StripeContainer cost={overallPrice} /> : null}
+          {openPaymentBar ? (
+            <StripeContainer userId={currUser.id} cost={overallPrice} />
+          ) : null}
         </Grid>
       </Grid>
     </>
