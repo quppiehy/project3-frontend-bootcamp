@@ -2,6 +2,12 @@ import axios from "axios";
 
 export const addToCart = async (id, quantityToBuy, currUserId) => {
   console.log("quantity to buy", quantityToBuy);
+  console.log(
+    "passed down productid, quantity, curruserid",
+    id,
+    quantityToBuy,
+    currUserId
+  );
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_BACKEND_URL}/products/carts/${currUserId}` //check if a user has a cart already

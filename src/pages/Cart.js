@@ -30,7 +30,7 @@ const Cart = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/products/cart/${currUser.id}`
       );
-      console.log(response.data);
+      console.log("Response", response.data);
       setProductsInCart(response.data);
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -42,33 +42,49 @@ const Cart = () => {
   };
 
   const calculatePreDiscountTotal = () => {
-    return productsInCart
-      .reduce((total, product) => {
-        return total + parseFloat(product.product.price) * product.quantity;
-      }, 0)
-      .toFixed(2);
+    if (productsInCart.length < 0) {
+      return 0;
+    } else {
+      return productsInCart
+        .reduce((total, product) => {
+          return total + parseFloat(product.product.price) * product.quantity;
+        }, 0)
+        .toFixed(2);
+    }
   };
 
   const calculatePostDiscountTotal = () => {
-    return productsInCart
-      .reduce((total, product) => {
-        const price = parseFloat(product.product.price);
-        const discountAmount = product.product.seller_discount
-          ? parseFloat(product.product.seller_discount.discountAmount)
-          : 0;
-        return total + (price - price * discountAmount) * product.quantity;
-      }, 0)
-      .toFixed(2);
+    if (productsInCart.length < 0) {
+      return 0;
+    } else {
+      return productsInCart
+        .reduce((total, product) => {
+          const price = parseFloat(product.product.price);
+          const discountAmount = product.product.seller_discount
+            ? parseFloat(product.product.seller_discount.discountAmount)
+            : 0;
+          return total + (price - price * discountAmount) * product.quantity;
+        }, 0)
+        .toFixed(2);
+    }
   };
 
   const calculateGST = () => {
-    return (parseFloat(calculatePostDiscountTotal()) * 0.08).toFixed(2);
+    if (productsInCart.length < 0) {
+      return 0;
+    } else {
+      return (parseFloat(calculatePostDiscountTotal()) * 0.08).toFixed(2);
+    }
   };
 
   const calculateTotal = () => {
-    return (
-      parseFloat(calculatePostDiscountTotal()) + parseFloat(calculateGST())
-    ).toFixed(2);
+    if (productsInCart.length < 0) {
+      return 0;
+    } else {
+      return (
+        parseFloat(calculatePostDiscountTotal()) + parseFloat(calculateGST())
+      ).toFixed(2);
+    }
   };
 
   console.log("cartid");

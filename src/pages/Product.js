@@ -18,6 +18,7 @@ import Swal from "sweetalert2";
 import { useUserContext } from "../Components/UserContext";
 import { useSocket } from "../Components/SocketContextProvider";
 import "../styles/chat.css";
+import { addToCart } from "../utils/CartFunctions";
 
 const Product = () => {
   const [productIndex, setProductIndex] = useState();
@@ -67,7 +68,7 @@ const Product = () => {
           <span style={{ textDecoration: "line-through" }}>
             ${itemPricePerUnit}{" "}
           </span>
-          <span style={{ color: "red" }}>${priceAfterDiscount}</span>
+          <span style={{ color: "red" }}>${priceAfterDiscount.toFixed(2)}</span>
         </Typography>
       );
     }
@@ -292,7 +293,14 @@ const Product = () => {
           </Button>
           <Divider sx={{ mt: "20px", mb: "20px" }} />
 
-          <Button variant="contained" color="primary" sx={{ ml: "8vw" }}>
+          <Button
+            onClick={() =>
+              addToCart(productIndex, currentAmountChoice, currUser.id)
+            }
+            variant="contained"
+            color="primary"
+            sx={{ ml: "8vw" }}
+          >
             Add to Cart!
           </Button>
           <Divider sx={{ mt: "20px", mb: "20px" }} />
