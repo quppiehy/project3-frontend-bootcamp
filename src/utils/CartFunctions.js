@@ -1,7 +1,9 @@
 import axios from "axios";
 
 export const addToCart = async (id, quantityToBuy, currUserId) => {
-  console.log("quantity to buy", quantityToBuy);
+  if (!quantityToBuy) {
+    quantityToBuy = 1;
+  }
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_BACKEND_URL}/products/carts/${currUserId}` //check if a user has a cart already
@@ -11,7 +13,7 @@ export const addToCart = async (id, quantityToBuy, currUserId) => {
     const UpdateCurrentCartProducts = {
       currentCartId: response.data,
       productId: id,
-      quantity: 1,
+      quantity: quantityToBuy,
     };
 
     await axios.post(
@@ -28,7 +30,6 @@ export const updateQuantityOfProduct = async (
   productId,
   quantityToBuy
 ) => {
-  console.log("quantity to buy", quantityToBuy);
   try {
     const quantityUpdated = {
       productId: productId,
@@ -39,7 +40,6 @@ export const updateQuantityOfProduct = async (
       `${process.env.REACT_APP_BACKEND_URL}/products/cart/${currentCartId}`,
       quantityUpdated
     );
-    console.log("cart id", response.data);
   } catch (err) {
     console.log(err);
   }
@@ -50,7 +50,6 @@ export const deleteProductFromCart = async (currentCartId, productId) => {
     const response = await axios.delete(
       `${process.env.REACT_APP_BACKEND_URL}/products/cart/${currentCartId}/${productId}`
     );
-    console.log(response.data);
     return response.data;
   } catch (err) {
     console.log(err);
@@ -59,9 +58,7 @@ export const deleteProductFromCart = async (currentCartId, productId) => {
 };
 
 export const updateTotalOfCart = async (total, currentCartId) => {
-  console.log("pressed");
   if (total > 0) {
-    console.log("total is", total);
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/products/cart/${currentCartId}/total`,

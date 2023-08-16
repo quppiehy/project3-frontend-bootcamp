@@ -21,7 +21,6 @@ const Cart = () => {
   }, [currUser, setCurrUser]);
 
   useEffect(() => {
-    //http://localhost:8080/products/cart/11
     getProductsInCart();
   }, []);
 
@@ -92,7 +91,7 @@ const Cart = () => {
                   quantity={product.quantity}
                   product={product.product}
                   onProductUpdate={handleProductUpdate}
-                  key={index}
+                  key={product.product.id}
                 />
               ))}
             </Box>

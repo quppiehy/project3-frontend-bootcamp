@@ -26,7 +26,6 @@ const ProductCard = ({
   const [quantityToBuy, setQuantityToBuy] = useState(quantity);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  console.log(product);
 
   useEffect(() => {
     if (!currUser) {
@@ -39,9 +38,6 @@ const ProductCard = ({
     await deleteProductFromCart(cart, product.id);
     await onProductUpdate();
   };
-
-  console.log("quantity", quantity);
-  console.log("cart id", cart);
   return (
     <Box>
       <Card sx={{ width: "100%", height: "100%" }}>
@@ -112,9 +108,9 @@ const ProductCard = ({
                     setQuantityToBuy((prevQuantity) => {
                       const newQuantity = prevQuantity - 1;
                       updateQuantityOfProduct(cart, product.id, newQuantity);
+                      onProductUpdate();
                       return newQuantity;
                     });
-                    onProductUpdate();
                   }
                 }}
                 variant="outlined"
@@ -126,9 +122,9 @@ const ProductCard = ({
                   setQuantityToBuy((prevQuantity) => {
                     const newQuantity = prevQuantity + 1;
                     updateQuantityOfProduct(cart, product.id, newQuantity);
+                    onProductUpdate();
                     return newQuantity;
                   });
-                  onProductUpdate();
                 }}
                 variant="outlined"
               >
