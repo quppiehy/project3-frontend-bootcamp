@@ -19,6 +19,7 @@ import { useUserContext } from "../Components/UserContext";
 import { useSocket } from "../Components/SocketContextProvider";
 import "../styles/chat.css";
 import { addToCart } from "../utils/CartFunctions";
+import Review from "../pages/Review"
 
 const Product = () => {
   const [productIndex, setProductIndex] = useState();
@@ -318,6 +319,7 @@ const Product = () => {
               </Typography>
             </Grid>
           </Grid>
+          <Review/>
           <Divider sx={{ mt: "20px", mb: "20px" }} />
         </Box>
       </Grid>
