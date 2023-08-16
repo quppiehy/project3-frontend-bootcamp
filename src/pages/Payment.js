@@ -12,13 +12,15 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
+  Grid,
 } from "@mui/material";
 import { Directions } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
+import StripeContainer from "../Components/StripeContainer";
 
 function Payment() {
   const [overallPrice, setOverallPrice] = useState(0);
-  const [couponCode, setCouponCode] = useState("");
+  const [openPaymentBar, setOpenPaymentBar] = useState(false);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState("COD");
   const itemsCart = [
     {
@@ -97,16 +99,13 @@ function Payment() {
         component="form"
         sx={{ p: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
       >
-        <IconButton sx={{ padding: "10px" }} aria-label="menu"></IconButton>
+        <Typography variant="h6">Coupon Code:</Typography>
         <InputBase
           sx={{ marginLeft: 1, flex: 1 }}
           placeholder="Coupon Code Here"
         />
-
         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-        <IconButton color="primary" sx={{ p: "10px" }} aria-label="directions">
-          <Directions />
-        </IconButton>
+        <Directions />
       </Paper>
       <br />
       <Divider variant="middle" />
@@ -132,7 +131,11 @@ function Payment() {
       </FormControl>
       <br />
       {selectedPaymentOption === "CDC" ? (
-        <Button variant="contained" size="large">
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => setOpenPaymentBar(true)}
+        >
           Checkout
         </Button>
       ) : (
@@ -140,6 +143,12 @@ function Payment() {
           Proceed to Payment
         </Button>
       )}
+      <Divider sx={{ mt: 3, mb: 3 }} />
+      <Grid container justifyContent="center" flexDirection="row">
+        <Grid item sx={{ width: "50%" }}>
+          {openPaymentBar ? <StripeContainer cost={overallPrice} /> : null}
+        </Grid>
+      </Grid>
     </>
   );
 }
