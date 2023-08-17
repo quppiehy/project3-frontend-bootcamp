@@ -21,7 +21,7 @@ const Categories = () => {
   };
 
   return (
-    <Box sx={{ paddingTop: "100px" }}>
+    <>
       <Box
         sx={{
           width: "100%",
@@ -35,7 +35,9 @@ const Categories = () => {
         <Grid container spacing={4} sx={{ width: "800px" }}>
           {categories.map((category, i) => (
             <Grid item xs={6} md={4} mkey={i}>
-              <Link to={`/categories/${category.id}`}>
+              <Link
+                to={`/categories/${category.id}`}
+              >
                 <Paper
                   sx={{
                     maxWidth: "400px",
@@ -53,7 +55,7 @@ const Categories = () => {
           ))}
         </Grid>
       </Box>
-    </Box>
+    </>
   );
 };
 
