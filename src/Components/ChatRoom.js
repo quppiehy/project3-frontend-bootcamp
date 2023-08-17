@@ -39,7 +39,11 @@ function ChatRoom(props) {
     timeZone: "Asia/Singapore",
   });
 
-  console.log(formattedDate);
+  const getDateTime = () => {
+    const dateString = new Date().toJSON();
+    const date = dateString.slice(0, 10);
+    setTodayDate(date);
+  };
 
   useEffect(() => {
     console.log(room);
@@ -62,20 +66,6 @@ function ChatRoom(props) {
       setCurrUser(localAccess);
     }
   }, [currUser]);
-
-  const getDateTime = () => {
-    const dateString = new Date().toJSON();
-    const date = dateString.slice(0, 10);
-    setTodayDate(date);
-  };
-
-  useEffect(() => {
-    console.log(todayDate);
-  }, [todayDate]);
-
-  useEffect(() => {
-    console.log(time);
-  }, [time]);
 
   useEffect(() => {
     console.log(messageList);
