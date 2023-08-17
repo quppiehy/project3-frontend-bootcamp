@@ -10,6 +10,7 @@ import {
   Typography,
   CardActionArea,
 } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
 import ElectronicAccessoriesPicture from "../images/ElectronicAccessories.png";
 import ElectronicDevices from "../images/ElectronicDevices.png";
 import TV from "../images/TV.png";
@@ -28,6 +29,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { useUserContext } from "../Components/UserContext";
 import { Link } from "react-router-dom";
+import { theme2 } from "../theme";
 
 const Homepage = () => {
   const { loginWithRedirect, getAccessTokenSilently, user, isAuthenticated } =
@@ -38,6 +40,7 @@ const Homepage = () => {
   const [deal2, setDeal2] = useState();
   const [deal3, setDeal3] = useState();
   const [overallDeals, setOverallDeals] = useState();
+
   const [deals, setDeals] = useState([
     {
       photos: [
@@ -229,16 +232,18 @@ const Homepage = () => {
   return (
     <>
       {/* Hero */}
+
       <Box
         className="hero"
         sx={{
+          paddingTop: "60px",
           position: "relative",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           width: "100%",
           height: {
-            xl: "70vh",
+            xl: "50vh",
           },
           overflow: "hidden",
         }}
@@ -250,7 +255,7 @@ const Homepage = () => {
           sx={{
             position: "absolute",
             left: {
-              xs: "16%",
+              xs: "10%",
               lg: "5%",
             },
             bottom: "0%",
@@ -262,130 +267,133 @@ const Homepage = () => {
       </Box>
 
       {/* Top Categories */}
-      <Box className="top-categories" sx={{}}>
-        <Typography
-          variant="h2"
-          sx={{ p: "20px 0 20px 0", overflow: "hidden" }}
-        >
-          SHOP OUR TOP CATEGORIES
-        </Typography>
-        <Box sx={{ p: "20px" }}>
-          <Grid container spacing={2}>
-            {categories.map((category, index) => (
-              <Grid item xs={4} sm={6} md={4} lg={2} xl={2} key={index}>
-                <Link to={`/categories/${index + 1}`}>
-                  <Card
-                    sx={{
-                      height: { xs: "200px", sm: "250px" },
-                      width: { xs: "100%", sm: "200px" },
-                      position: "relative",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <CardMedia
-                      component="img"
+      <ThemeProvider theme={theme2}>
+        <Box className="top-categories" sx={{ paddingLeft: "50px" }}>
+          <Typography
+            variant="h4"
+            sx={{ p: "20px 0 20px 0", overflow: "hidden" }}
+          >
+            SHOP OUR TOP CATEGORIES
+          </Typography>
+          <Box sx={{ p: "20px" }}>
+            <Grid container spacing={2}>
+              {categories.map((category, index) => (
+                <Grid item xs={4} sm={6} md={4} lg={2} xl={2} key={index}>
+                  <Link to={`/categories/${index + 1}`}>
+                    <Card
                       sx={{
-                        position: "absolute",
-                        objectFit: "cover",
-                        width: "100%",
-                        height: "100%",
-                      }}
-                      image={category.image}
-                      alt={`image ${index + 1}`}
-                    />
-                    <CardContent
-                      sx={{
-                        position: "absolute",
-                        top: "10px",
-                        left: {
-                          xs: "-1",
-                          md: "10px",
-                        },
-                        color: "white",
-                        padding: "5px",
+                        height: { xs: "200px", sm: "250px" },
+                        width: { xs: "100%", sm: "200px" },
+                        position: "relative",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
-                      <Typography variant="h5">{category.name}</Typography>
-                    </CardContent>
-                  </Card>
-                </Link>
+                      <CardMedia
+                        component="img"
+                        sx={{
+                          position: "absolute",
+                          objectFit: "cover",
+                          width: "100%",
+                          height: "100%",
+                        }}
+                        image={category.image}
+                        alt={`image ${index + 1}`}
+                      />
+                      <CardContent
+                        sx={{
+                          position: "absolute",
+                          top: "10px",
+                          left: {
+                            xs: "-1",
+                            md: "10px",
+                          },
+                          color: "white",
+                          padding: "5px",
+                        }}
+                      >
+                        <Typography variant="h5">{category.name}</Typography>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </Box>
+      </ThemeProvider>
+      {/* Best deals */}
+      <ThemeProvider theme={theme2}>
+        <Box className="best-deals" sx={{ paddingLeft: "50px" }}>
+          <Typography variant="h4" sx={{ py: "30px" }}>
+            TODAY'S BEST DEALS FOR YOU
+          </Typography>
+          <Box sx={{ p: "20px 5% 0 5%", margin: "0" }}>
+            <Grid container spacing={2}>
+              {deals.map((product, index) => {
+                console.log("product is", product);
+                return (
+                  <Grid item xs={6} md={4} key={index}>
+                    <ProductCard product={product} />
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Box>
+        </Box>
+      </ThemeProvider>
+      {/*  Get Up to 50% Off */}
+      <ThemeProvider theme={theme2}>
+        <Box sx={{ p: "20px", paddingLeft: "50px" }}>
+          <Typography variant="h4" sx={{ py: "20px" }}>
+            GET UP TO 50% OFF
+          </Typography>
+          <Grid container spacing={4}>
+            {saves.map((save, i) => (
+              <Grid
+                item
+                xs={6}
+                md={6}
+                xl={3}
+                key={i}
+                sx={{ margin: "0", padding: "0" }}
+              >
+                <Card
+                  sx={{
+                    height: "97%",
+                    backgroundColor: save.color,
+                  }}
+                >
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      Save
+                    </Typography>
+                    <Typography gutterBottom variant="h5" component="div">
+                      ${save.save}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {save.description}
+                    </Typography>
+                  </CardContent>
+                  <CardActionArea>
+                    <CardMedia
+                      component="img"
+                      height="100%"
+                      image={save.image}
+                      alt={i + save.image}
+                    />
+                  </CardActionArea>
+                </Card>
               </Grid>
             ))}
           </Grid>
         </Box>
-      </Box>
-
-      {/* Best deals */}
-      <Box className="best-deals">
-        <Typography variant="h2" sx={{ py: "30px" }}>
-          TODAY'S BEST DEALS FOR YOU
-        </Typography>
-        <Box sx={{ p: "20px 5% 0 5%", margin: "0" }}>
-          <Grid container spacing={2}>
-            {deals.map((product, index) => {
-              console.log("product is", product);
-              return (
-                <Grid item xs={6} md={4} key={index}>
-                  <ProductCard product={product} />
-                </Grid>
-              );
-            })}
-          </Grid>
-        </Box>
-      </Box>
-
-      {/*  Get Up to 50% Off */}
-      <Box sx={{ p: "20px" }}>
-        <Typography variant="h2" sx={{ py: "20px" }}>
-          GET UP TO 50% OFF
-        </Typography>
-        <Grid container spacing={4}>
-          {saves.map((save, i) => (
-            <Grid
-              item
-              xs={6}
-              md={6}
-              xl={3}
-              key={i}
-              sx={{ margin: "0", padding: "0" }}
-            >
-              <Card
-                sx={{
-                  height: "97%",
-                  backgroundColor: save.color,
-                }}
-              >
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Save
-                  </Typography>
-                  <Typography gutterBottom variant="h5" component="div">
-                    ${save.save}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {save.description}
-                  </Typography>
-                </CardContent>
-                <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    height="100%"
-                    image={save.image}
-                    alt={i + save.image}
-                  />
-                </CardActionArea>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-
+      </ThemeProvider>
       {/* Footer */}
       <Box
         sx={{
-          height: "500px",
+          height: "200px",
           width: "100%",
           backgroundColor: "primary.main",
           overflow: "hidden",
