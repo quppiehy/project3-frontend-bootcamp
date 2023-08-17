@@ -2,7 +2,7 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useUserContext } from "../Components/UserContext";
-
+import Swal from "sweetalert2";
 const Profile = () => {
   const { currUser, setCurrUser } = useUserContext();
 
@@ -53,6 +53,12 @@ const Profile = () => {
         `${process.env.REACT_APP_BACKEND_URL}/users/addresses/${currUser.id}`,
         { ...addressData, userId: currUser.id }
       );
+      Swal.fire({
+        title: "Success",
+        text: "Profile updated successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     } catch (error) {
       console.error("Error updating profile:", error);
     }
