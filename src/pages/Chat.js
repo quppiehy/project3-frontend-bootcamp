@@ -34,8 +34,6 @@ function Chat() {
   const [chatList, setChatList] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
   const [showChatMessages, setShowChatMessages] = useState(false);
-  const [sellerChatList, setSellerChatList] = useState([]);
-  const [sellerChatMessages, setSellerChatMessages] = useState([]);
   const [chatInfo, setChatInfo] = useState({});
   const socket = useSocket();
   const drawerWidth = 240;
@@ -47,7 +45,15 @@ function Chat() {
     }
   }, [currUser, setCurrUser]);
 
-  // to retrieve messages for 1 chat in chatList asb
+  // const joinRoom = () => {
+  //   if (username !== "" && room !== "") {
+  //     console.log(`Joining Room: ${room}`);
+  //     // socket.emit("join_room", room);
+  //   }
+  //   setShowChat(true);
+  // };
+
+  // to retrieve messages for 1 chat in chatList
 
   const retrieveMessages = (chatId, index) => {
     console.log(chatId);
@@ -69,43 +75,13 @@ function Chat() {
     }
   });
 
-  // to retrieve chatList as seller
-
-  socket.on("seller_chat_list", (sellerChatList) => {
-    console.log("New seller chatlist received: ");
-    console.log(sellerChatList);
-    if (sellerChatList !== null) {
-      setSellerChatList(sellerChatList);
-      const sellerChats = [...chatList, ...sellerChatList];
-      setChatList(sellerChats);
-    }
-  });
-
-  useEffect(() => {
-    console.log("retrieve_checklist socket emitted");
-    console.log(currUser);
-    if (currUser !== null) {
-      socket.emit("retrieve_chatlist", currUser.id);
-      socket.emit("getSeller_chatlist", currUser.id);
-    }
-  }, [currUser]);
-
-  useEffect(() => {
-    console.log("ChatMessages state variable set!");
-    console.log(chatMessages);
-    if (chatMessages.length > 0) {
-      setShowChatMessages(true);
-    }
-  }, [chatMessages]);
-
   // to retrieve chatList
 
-  socket.on("user_chat_list", (newChatList) => {
+  socket.on("user_chat_list", (chatList) => {
     console.log("New chatlist received: ");
-    console.log(newChatList);
+    console.log(chatList);
     if (chatList !== null) {
-      const updatedChat = [...chatList, ...newChatList];
-      setChatList(updatedChat);
+      setChatList(chatList);
     }
   });
 
@@ -116,19 +92,24 @@ function Chat() {
       socket.emit("retrieve_chatlist", currUser.id);
     }
   }, [currUser]);
-
-  useEffect(() => {
-    console.log("ChatMessages state variable set!");
-    console.log(chatMessages);
-    if (chatMessages.length > 0) {
-      setShowChatMessages(true);
-    }
-  }, [chatMessages]);
 
   useEffect(() => {
     console.log("ChatList state variable set!");
     console.log(chatList);
   }, [chatList]);
+
+  useEffect(() => {
+    console.log("ChatMessages state variable set!");
+    console.log(chatMessages);
+    if (chatMessages.length > 0) {
+      setShowChatMessages(true);
+    }
+  }, [chatMessages]);
+
+  useEffect(() => {
+    console.log("Selected Index!");
+    console.log(selectedChatIndex);
+  }, [selectedChatIndex]);
 
   const mapCheckList = chatList.map((chatItem, index) => (
     <List
@@ -138,13 +119,11 @@ function Chat() {
         bgcolor: "background.paper",
         key: `List${index}`,
       }}
-      subheader={
-        <ListSubheader component="div" id="nested-list-subheader">
-          <Typography variant="h6">
-            {chatItem.sellerId === currUser.id ? "Seller" : "Buyer"}
-          </Typography>
-        </ListSubheader>
-      }
+      // subheader={
+      //   <ListSubheader component="div" id="nested-list-subheader">
+      //     <Typography variant="h5"> Current Chat</Typography>
+      //   </ListSubheader>
+      // }
     >
       <ListItem
         alignItems="flex-start"
@@ -158,21 +137,24 @@ function Chat() {
       >
         <ListItemButton>
           <ListItemAvatar>
-            <Avatar alt={"user"} src={chatItem.product.photos[0].url} />
+            <Avatar
+              alt={chatItem.product.seller.userName}
+              src={chatItem.product.photos[0].url}
+            />
           </ListItemAvatar>
           <ListItemText
             primary={chatItem.product.title}
             secondary={
               <React.Fragment>
-                {/* <Typography
+                <Typography
                   sx={{ display: "inline" }}
                   component="span"
                   variant="body2"
                   color="text.primary"
                 >
                   Seller: {chatItem.product.seller.userName}
-                </Typography> */}
-                {/* <br /> */}
+                </Typography>
+                <br />
                 {`Price: $${chatItem.product.price}`}
               </React.Fragment>
             }
@@ -216,7 +198,7 @@ function Chat() {
   // ));
 
   return (
-    <Box sx={{ display: "flex", paddingTop: "60px" }} key="Box1">
+    <Box sx={{ display: "flex" }} key="Box1">
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -236,7 +218,6 @@ function Chat() {
       <Drawer
         sx={{
           width: drawerWidth,
-          paddingTop: "60px",
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
@@ -252,7 +233,7 @@ function Chat() {
         <Toolbar />
         <Divider />
         {chatList.length > 0 ? (
-          <Box sx={{ paddingTop: "40px" }}>{mapCheckList}</Box>
+          mapCheckList
         ) : (
           <Box sx={{ paddingLeft: `16px`, paddingTop: `23px` }}>
             <Typography variant="h5">No current chats available.</Typography>

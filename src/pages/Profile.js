@@ -2,8 +2,6 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useUserContext } from "../Components/UserContext";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme2 } from "../theme";
 import Swal from "sweetalert2";
 const Profile = () => {
   const { currUser, setCurrUser } = useUserContext();
@@ -72,17 +70,10 @@ const Profile = () => {
   };
 
   return (
-    <Box>
-      <Box sx={{ paddingTop: "90px" }}>
-        <ThemeProvider theme={theme2}>
-          <Typography variant="h3">My Profile</Typography>
-        </ThemeProvider>
-        <Box sx={{ paddingLeft: "30px", paddingTop: "20px" }}>
-          <Typography variant="h5">Manage and protect your account</Typography>
-          <Typography paragraph>
-            Fields marked with * are required fields.
-          </Typography>
-        </Box>
+    <>
+      <Box>
+        <Typography variant="h3">My profile</Typography>
+        <Typography variant="h5">Manage and protect your account</Typography>
         <hr />
         <Box
           sx={{
@@ -174,7 +165,7 @@ const Profile = () => {
           </Button>
         </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 

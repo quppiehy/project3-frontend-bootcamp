@@ -39,6 +39,7 @@ function App() {
             <Route path="/delivery" element={<Delivery />} />
             <Route path="/products/:productId" element={<Product />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/chatroom" element={<ChatRoom />} />
             <Route path="/firebaseUpload" element={<FirebaseUpload />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/uploadproduct" element={<UploadProduct />} />
