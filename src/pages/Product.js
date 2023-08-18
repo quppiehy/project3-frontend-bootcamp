@@ -35,7 +35,7 @@ const Product = () => {
   const [sellerDiscountPercentage, setSellerDiscountPercentage] = useState(0);
   const [displayPrice, setDisplayPrice] = useState();
   const { currUser, setCurrUser } = useUserContext();
-  const [sellerEmail, setSellerEmail] = useState();
+  // const [sellerEmail, setSellerEmail] = useState();
   const [sellerId, setSellerId] = useState();
   const [chatRoomInfo, setChatRoomInfo] = useState({});
   const [isNewRoomEmitted, setIsNewRoomEmitted] = useState(false);
@@ -86,7 +86,7 @@ const Product = () => {
       axios
         .get(`${process.env.REACT_APP_BACKEND_URL}/products/${productIndex}`)
         .then((info) => {
-          console.log(info);
+          console.log(info.data.sellerId);
           const data = info.data;
           setItemName(data.title);
           setItemDescription(data.description);
@@ -95,8 +95,8 @@ const Product = () => {
           setOverallPhotos(data.photos);
           setMainPhoto(data.photos[0].url);
           setSellerDiscountPercentage(data.sellerDiscountId);
-          setSellerEmail(data.seller.email);
-          setSellerId(data.seller.id);
+          // setSellerEmail(data.seller.email);
+          setSellerId(data.sellerId);
         })
         .catch((error) => {
           console.log(error);
@@ -167,26 +167,41 @@ const Product = () => {
 
   useEffect(() => {
     const productId = productIndex;
-    if (currUser && productId) {
-      const info = { productId: productId, userId: currUser.id };
+    if (currUser && productId && sellerId) {
+      console.log(sellerId); // Why is this not working???
+      console.log(currUser.Id);
+      const info = {
+        productId: productId,
+        userId: currUser.id,
+        sellerId: sellerId,
+      };
       setChatRoomInfo(info);
     }
-  }, [currUser, productIndex]);
+  }, [currUser, productIndex, sellerId]);
 
   const joinRoom = () => {
-    if (!isNewRoomEmitted && chatRoomInfo != null) {
-      //don't allow seller to start chat with himself (as buyer)
-      if (sellerId !== currUser.id) {
-        console.log(chatRoomInfo);
-        console.log(`Sending info to backend: ${chatRoomInfo}`);
-        socket.emit("new_room", chatRoomInfo);
-        setIsNewRoomEmitted(true);
-      } else {
-        Swal.fire({
-          title: "Oooops!",
-          text: "You cannot start a chat with yourself!",
-          icon: "error",
-        });
+    console.log("Joinroom sellerId : ", sellerId);
+    if (sellerId === null) {
+      Swal.fire({
+        title: "Oooops!",
+        text: "SellerId cannot be found! Please try again.",
+        icon: "error",
+      });
+    } else {
+      if (!isNewRoomEmitted && chatRoomInfo != null) {
+        //don't allow seller to start chat with himself (as buyer)
+        if (sellerId !== currUser.id) {
+          console.log(chatRoomInfo);
+          console.log(`Sending info to backend: ${chatRoomInfo}`);
+          socket.emit("new_room", chatRoomInfo);
+          setIsNewRoomEmitted(true);
+        } else {
+          Swal.fire({
+            title: "Oooops!",
+            text: "You cannot start a chat with yourself!",
+            icon: "error",
+          });
+        }
       }
     }
   };

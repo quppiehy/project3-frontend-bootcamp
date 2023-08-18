@@ -163,7 +163,7 @@ function UploadProduct() {
 
     Promise.all(uploadPromises).then((downloadLinks) => {
       console.log(downloadLinks);
-      const sellerId = currUser.id;
+      // const sellerId = currUser.id;
       let sellerDiscountId;
       if (productDiscount === "false") {
         sellerDiscountId = null;
@@ -171,7 +171,7 @@ function UploadProduct() {
         sellerDiscountId = productDiscountAmount;
       }
       const dataToSend = {
-        sellerId: sellerId,
+        sellerId: currUser.id,
         sellerDiscountId: sellerDiscountId,
         title: productName,
         price: productPricePerUnit,
