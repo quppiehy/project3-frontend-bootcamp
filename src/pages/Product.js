@@ -36,6 +36,7 @@ const Product = () => {
   const [displayPrice, setDisplayPrice] = useState();
   const { currUser, setCurrUser } = useUserContext();
   const [sellerEmail, setSellerEmail] = useState();
+  const [sellerId, setSellerId] = useState();
   const [chatRoomInfo, setChatRoomInfo] = useState({});
   const [isNewRoomEmitted, setIsNewRoomEmitted] = useState(false);
   const navigate = useNavigate();
@@ -95,6 +96,7 @@ const Product = () => {
           setMainPhoto(data.photos[0].url);
           setSellerDiscountPercentage(data.sellerDiscountId);
           setSellerEmail(data.seller.email);
+          setSellerId(data.seller.id);
         })
         .catch((error) => {
           console.log(error);
@@ -173,15 +175,24 @@ const Product = () => {
 
   const joinRoom = () => {
     if (!isNewRoomEmitted && chatRoomInfo != null) {
-      console.log(chatRoomInfo);
-      console.log(`Sending info to backend: ${chatRoomInfo}`);
-      socket.emit("new_room", chatRoomInfo);
-      setIsNewRoomEmitted(true);
+      //don't allow seller to start chat with himself (as buyer)
+      if (sellerId !== currUser.id) {
+        console.log(chatRoomInfo);
+        console.log(`Sending info to backend: ${chatRoomInfo}`);
+        socket.emit("new_room", chatRoomInfo);
+        setIsNewRoomEmitted(true);
+      } else {
+        Swal.fire({
+          title: "Oooops!",
+          text: "You cannot start a chat with yourself!",
+          icon: "error",
+        });
+      }
     }
   };
 
   return (
-    <div>
+    <Box sx={{ paddingTop: "60px" }}>
       <Grid container sx={{ display: "flex", flexDirection: "row" }}>
         <Grid item xs={12} lg={6}>
           <Box className="main-picture-area">
@@ -323,7 +334,7 @@ const Product = () => {
           <Divider sx={{ mt: "20px", mb: "20px" }} />
         </Box>
       </Grid>
-    </div>
+    </Box>
   );
 };
 

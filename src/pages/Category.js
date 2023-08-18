@@ -42,7 +42,7 @@ const Category = () => {
 
   return (
     <>
-      <Box>
+      <Box sx={{ paddingTop: "60px" }}>
         <Box sx={{ p: "20px 5% 20px 5%", width: "100%", m: "0 auto" }}>
           <Link to="/categories">
             <Button sx={{ color: "#000" }} variant="">
