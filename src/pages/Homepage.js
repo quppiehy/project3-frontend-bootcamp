@@ -30,6 +30,7 @@ import axios from "axios";
 import { useUserContext } from "../Components/UserContext";
 import { Link } from "react-router-dom";
 import { theme2 } from "../theme";
+import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
   const { loginWithRedirect, getAccessTokenSilently, user, isAuthenticated } =
@@ -76,6 +77,8 @@ const Homepage = () => {
       id: 0,
     },
   ]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if ((deal1, deal2, deal3)) {
@@ -263,6 +266,22 @@ const Homepage = () => {
           }}
         >
           SHOP NOW
+        </Button>{" "}
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{
+            position: "absolute",
+            right: {
+              xs: "10%",
+              lg: "5%",
+            },
+            bottom: "0%",
+            transform: "translate(-50%, -50%)",
+          }}
+          onClick={(e) => navigate("/uploadproduct")}
+        >
+          Upload Product
         </Button>
       </Box>
 
