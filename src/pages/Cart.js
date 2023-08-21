@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, ThemeProvider, Divider } from "@mui/material";
 import HomepodMini from "../images/deals-homepodmini.png";
 import InstaxMini9 from "../images/deals-instaxmini9.png";
 import BaseCampDuffelM from "../images/deals-basecampduffelm.png";
@@ -8,6 +8,7 @@ import { updateTotalOfCart } from "../utils/CartFunctions";
 import { useUserContext } from "../Components/UserContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { theme2 } from "../theme";
 
 const Cart = () => {
   const { currUser, setCurrUser } = useUserContext();
@@ -93,9 +94,13 @@ const Cart = () => {
   console.log("cartid");
   return (
     <>
-      <Typography variant="h3" sx={{ py: "20px", textAlign: "center" }}>
-        My Cart
-      </Typography>
+      <Box sx={{ paddingTop: "100px" }}>
+        <ThemeProvider theme={theme2}>
+          <Typography variant="h3" sx={{ py: "20px", textAlign: "center" }}>
+            My Cart
+          </Typography>
+        </ThemeProvider>
+      </Box>
       <Box sx={{ display: "flex", justifyContent: "space-around" }}>
         <Box sx={{ width: "400px" }}>
           <Box sx={{ p: "2% 5%", margin: "0" }}>
@@ -118,14 +123,20 @@ const Cart = () => {
           </Box>
         </Box>
         <Box>
-          <Typography>
-            Total Before Discounts: ${calculatePreDiscountTotal()}
-          </Typography>
-          <Typography>
-            Total After Discounts: ${calculatePostDiscountTotal()}
-          </Typography>
-          <Typography>GST 8%: ${calculateGST()}</Typography>
-          <Typography>Total: ${calculateTotal()}</Typography>
+          <ThemeProvider theme={theme2}>
+            <Typography variant="h4">Current Order</Typography>
+            <Divider />
+            <br />
+            <Typography variant="h5">
+              Total Before Discounts: ${calculatePreDiscountTotal()}
+            </Typography>
+            <Typography variant="h5">
+              Total After Discounts: ${calculatePostDiscountTotal()}
+            </Typography>
+            <Typography variant="h5">GST 8%: ${calculateGST()}</Typography>
+            <Typography variant="h5">Total: ${calculateTotal()}</Typography>
+          </ThemeProvider>
+          <br />
           <Button
             variant="contained"
             onClick={() => {

@@ -1,7 +1,8 @@
-import { Box, Grid, Paper, Typography } from "@mui/material";
+import { Box, Grid, Paper, Typography, ThemeProvider } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { theme2 } from "../theme";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -22,37 +23,44 @@ const Categories = () => {
 
   return (
     <Box sx={{ paddingTop: "100px" }}>
-      <Box
-        sx={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          py: "20px",
-          px: "20px",
-        }}
-      >
-        <Grid container spacing={4} sx={{ width: "800px" }}>
-          {categories.map((category, i) => (
-            <Grid item xs={6} md={4} mkey={i}>
-              <Link to={`/categories/${category.id}`}>
-                <Paper
-                  sx={{
-                    maxWidth: "400px",
-                    height: { xs: "700px", md: "400px" },
-                    px: "20px",
-                  }}
-                >
-                  <Typography sx={{ py: "20px" }} variant="h5">
-                    {category.name}
-                  </Typography>
-                  <Typography>{category.description}</Typography>
-                </Paper>
-              </Link>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+      <ThemeProvider theme={theme2}>
+        <Box>
+          <Typography sx={{ py: "20px" }} variant="h3">
+            Our Categories
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            py: "20px",
+            px: "20px",
+          }}
+        >
+          <Grid container spacing={4} sx={{ width: "800px" }}>
+            {categories.map((category, i) => (
+              <Grid item xs={6} md={4} mkey={i}>
+                <Link to={`/categories/${category.id}`}>
+                  <Paper
+                    sx={{
+                      maxWidth: "400px",
+                      height: { xs: "700px", md: "400px" },
+                      px: "20px",
+                    }}
+                  >
+                    <Typography sx={{ py: "20px" }} variant="h5">
+                      {category.name}
+                    </Typography>
+                    <Typography>{category.description}</Typography>
+                  </Paper>
+                </Link>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </ThemeProvider>
     </Box>
   );
 };

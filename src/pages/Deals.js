@@ -1,8 +1,8 @@
-import { Box, Button, Grid, Paper, Typography } from "@mui/material";
+import { Box, Grid, Typography, ThemeProvider } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import ProductCard from "../Components/ProductCard";
+import { theme2 } from "../theme";
 
 const Deals = () => {
   const [deals, setDeals] = useState([]);
@@ -24,26 +24,30 @@ const Deals = () => {
 
   return (
     <>
-      <Typography variant="h3" sx={{ py: "20px", textAlign: "center" }}>
-        All the products!
-      </Typography>
-      <Box
-        sx={{
-          p: {
-            xs: "20px 5% 0 5%",
-            md: "20px 20% 0 20%",
-          },
-          margin: "0",
-        }}
-      >
-        <Grid container spacing={2}>
-          {deals.map((product, index) => (
-            <Grid item xs={6} md={4} key={index}>
-              <ProductCard product={product} />
+      <ThemeProvider theme={theme2}>
+        <Box sx={{ paddingTop: "100px" }}>
+          <Typography variant="h3" sx={{ py: "20px", textAlign: "center" }}>
+            Products on Saja
+          </Typography>
+          <Box
+            sx={{
+              p: {
+                xs: "20px 5% 0 5%",
+                md: "20px 20% 0 20%",
+              },
+              margin: "0px",
+            }}
+          >
+            <Grid container spacing={2}>
+              {deals.map((product, index) => (
+                <Grid item xs={6} md={4} key={index}>
+                  <ProductCard product={product} />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-      </Box>
+          </Box>
+        </Box>
+      </ThemeProvider>
     </>
   );
 };

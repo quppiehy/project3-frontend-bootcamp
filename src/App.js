@@ -19,6 +19,7 @@ import Category from "./pages/Category";
 import UploadProduct from "./pages/UploadProduct";
 import ChatRoom from "./Components/ChatRoom";
 import Chat from "./pages/Chat";
+import Error from "./pages/Error";
 
 function App() {
   const { isAuthenticated } = useAuth0();
@@ -39,10 +40,12 @@ function App() {
             <Route path="/delivery" element={<Delivery />} />
             <Route path="/products/:productId" element={<Product />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/chatroom" element={<ChatRoom />} />
             <Route path="/firebaseUpload" element={<FirebaseUpload />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/uploadproduct" element={<UploadProduct />} />
             <Route path="/pastorders" element={<PastOrders />} />
+            <Route path="*" element={<Error />} />
           </>
         ) : (
           <>
@@ -50,6 +53,7 @@ function App() {
             <Route path="/" element={<Auth />} />
             <Route path="/products/:productId" element={<Product />} />
             <Route path="/uploadproduct" element={<UploadProduct />} />
+            <Route path="*" element={<Error />} />
           </>
         )}
       </Routes>
