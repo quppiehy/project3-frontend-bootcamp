@@ -55,6 +55,19 @@ const Profile = () => {
         `${process.env.REACT_APP_BACKEND_URL}/users/addresses/${currUser.id}`,
         { ...addressData, userId: currUser.id }
       );
+      // Update the context state with new user data
+      const updatedUser = {
+        ...currUser,
+        userName: userData.userName,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        mobileNumber: userData.mobileNumber,
+      };
+      setCurrUser(updatedUser);
+
+      // Update local storage with new user data
+      localStorage.setItem("currUser", JSON.stringify(updatedUser));
       Swal.fire({
         title: "Success",
         text: "Profile updated successfully",
