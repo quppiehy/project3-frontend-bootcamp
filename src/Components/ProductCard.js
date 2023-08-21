@@ -57,10 +57,7 @@ const ProductCard = ({
           />
         </Link>
         <CardContent>
-          <Link
-            style={{ color: "#013d29" }}
-            to={`/products/${product.productId}`}
-          >
+          <Link style={{ color: "#013d29" }} to={`/products/${product.id}`}>
             <Typography
               gutterBottom
               variant="h5"
