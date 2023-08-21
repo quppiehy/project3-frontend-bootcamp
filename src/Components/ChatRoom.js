@@ -16,12 +16,12 @@ function ChatRoom(props) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
   const [todayDate, setTodayDate] = useState("");
-  const [time, setTime] = useState("");
+  // const [time, setTime] = useState("");
   const { currUser, setCurrUser } = useUserContext();
   const [username, setUsername] = useState("");
-  const [showChat, setShowChat] = useState(false);
-  const [chatMessages, setChatMessages] = useState("");
-  const [currentProduct, setCurrentProduct] = useState({});
+  // const [showChat, setShowChat] = useState(false);
+  // const [chatMessages, setChatMessages] = useState("");
+  // const [currentProduct, setCurrentProduct] = useState({});
   const [product, setProduct] = useState({});
   const socket = useSocket();
   const { oldMessages, room, chatInfo } = props;
@@ -47,6 +47,7 @@ function ChatRoom(props) {
 
   useEffect(() => {
     console.log(room);
+    console.log(chatInfo);
     console.log(chatInfo.product);
     if (room !== "") {
       setProduct(chatInfo.product);

@@ -51,7 +51,7 @@ function Chat() {
   const retrieveMessages = (chatId, index) => {
     console.log(chatId);
     console.log("Current Index is: ", index);
-    setSelectedChatIndex(index);
+    setSelectedChatIndex(chatId);
     setChatInfo(combinedChatList[index]);
     // console.log(currentChatInfo);
     if (chatId >= 0) {
@@ -71,11 +71,10 @@ function Chat() {
   // to retrieve chatList as seller
 
   socket.on("seller_chat_list", (chatList) => {
-    console.log("New seller chatlist received: ");
+    // console.log("New seller chatlist received: ");
 
     if (chatList !== null) {
       setSellerChatList(chatList);
-      console.log("Socket seller chat list (chatlist) ");
     }
   });
 
