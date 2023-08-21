@@ -26,16 +26,15 @@ import {
 } from "@mui/material";
 
 function Chat() {
-  //const [username, setUsername] = useState("");
   const [room, setRoom] = useState("");
-  //const [showChat, setShowChat] = useState(false);
   const { currUser, setCurrUser } = useUserContext();
   const [selectedChatIndex, setSelectedChatIndex] = useState(null);
   const [chatList, setChatList] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
   const [showChatMessages, setShowChatMessages] = useState(false);
   const [sellerChatList, setSellerChatList] = useState([]);
-  const [sellerChatMessages, setSellerChatMessages] = useState([]);
+  // const [sellerChatMessages, setSellerChatMessages] = useState([]);
+  const [combinedChatList, setCombinedChatList] = useState([]);
   const [chatInfo, setChatInfo] = useState({});
   const socket = useSocket();
   const drawerWidth = 240;
@@ -47,22 +46,22 @@ function Chat() {
     }
   }, [currUser, setCurrUser]);
 
-  // to retrieve messages for 1 chat in chatList asb
+  // to retrieve messages for 1 chat in chatList when clicked
 
   const retrieveMessages = (chatId, index) => {
     console.log(chatId);
     console.log("Current Index is: ", index);
-    const currentChatInfo = chatList[index];
-    setChatInfo(currentChatInfo);
-    console.log(currentChatInfo);
-    if (chatId !== null) {
+    setSelectedChatIndex(chatId);
+    setChatInfo(combinedChatList[index]);
+    // console.log(currentChatInfo);
+    if (chatId >= 0) {
+      console.log("ChatId is: ", chatId);
       socket.emit("retrieve_messages", chatId);
     }
   };
 
   socket.on("chat_messages", (messages) => {
-    console.log("New chat messages received: ");
-    console.log(messages);
+    // console.log("New chat messages received: ");
     if (messages !== null) {
       setChatMessages(messages);
       setShowChatMessages(true);
@@ -71,19 +70,27 @@ function Chat() {
 
   // to retrieve chatList as seller
 
-  socket.on("seller_chat_list", (sellerChatList) => {
-    console.log("New seller chatlist received: ");
-    console.log(sellerChatList);
-    if (sellerChatList !== null) {
-      setSellerChatList(sellerChatList);
-      const sellerChats = [...chatList, ...sellerChatList];
-      setChatList(sellerChats);
+  socket.on("seller_chat_list", (chatList) => {
+    // console.log("New seller chatlist received: ");
+
+    if (chatList !== null) {
+      setSellerChatList(chatList);
     }
   });
 
   useEffect(() => {
-    console.log("retrieve_checklist socket emitted");
-    console.log(currUser);
+    const combined = [...sellerChatList, ...chatList];
+    setCombinedChatList(combined);
+  }, [chatList, sellerChatList]);
+
+  useEffect(() => {
+    console.log("Combined chat List!");
+    console.log(combinedChatList);
+  }, [combinedChatList]);
+
+  useEffect(() => {
+    // console.log("retrieve_checklist socket emitted");
+    // console.log(currUser);
     if (currUser !== null) {
       socket.emit("retrieve_chatlist", currUser.id);
       socket.emit("getSeller_chatlist", currUser.id);
@@ -91,8 +98,7 @@ function Chat() {
   }, [currUser]);
 
   useEffect(() => {
-    console.log("ChatMessages state variable set!");
-    console.log(chatMessages);
+    // console.log("ChatMessages state variable set!");
     if (chatMessages.length > 0) {
       setShowChatMessages(true);
     }
@@ -101,11 +107,9 @@ function Chat() {
   // to retrieve chatList
 
   socket.on("user_chat_list", (newChatList) => {
-    console.log("New chatlist received: ");
-    console.log(newChatList);
-    if (chatList !== null) {
-      const updatedChat = [...chatList, ...newChatList];
-      setChatList(updatedChat);
+    // console.log("New chatlist received: ");
+    if (newChatList !== null) {
+      setChatList(newChatList);
     }
   });
 
@@ -130,7 +134,7 @@ function Chat() {
     console.log(chatList);
   }, [chatList]);
 
-  const mapCheckList = chatList.map((chatItem, index) => (
+  const mapCheckList = combinedChatList.map((chatItem, index) => (
     <List
       sx={{
         width: "100%",
@@ -153,7 +157,6 @@ function Chat() {
         onClick={() => {
           setShowChatMessages(false);
           retrieveMessages(chatItem.id, index);
-          setSelectedChatIndex(chatItem.id);
         }}
       >
         <ListItemButton>
@@ -164,15 +167,6 @@ function Chat() {
             primary={chatItem.product.title}
             secondary={
               <React.Fragment>
-                {/* <Typography
-                  sx={{ display: "inline" }}
-                  component="span"
-                  variant="body2"
-                  color="text.primary"
-                >
-                  Seller: {chatItem.product.seller.userName}
-                </Typography> */}
-                {/* <br /> */}
                 {`Price: $${chatItem.product.price}`}
               </React.Fragment>
             }
@@ -182,38 +176,6 @@ function Chat() {
       <Divider variant="inset" component="li" />
     </List>
   ));
-
-  // const mapMessages = chatMessages.map((messageItem, index) => (
-  //   <List
-  //     sx={{
-  //       width: "100%",
-  //       maxWidth: 500,
-  //       bgcolor: "background.paper",
-  //       key: "messageListKey",
-  //     }}
-  //   >
-  /* <ListItem alignItems="flex-start" key={messageItem.id}>
-        <ListItemText
-          primary={chatItem.product.title}
-          secondary={
-            <React.Fragment>
-              <Typography
-                sx={{ display: "inline" }}
-                component="span"
-                variant="body2"
-                color="text.primary"
-              >
-                Seller: {chatItem.product.seller.userName}
-              </Typography>
-              <br />
-              {`Price: $${chatItem.product.price}`}
-            </React.Fragment>
-          }
-        />
-      </ListItem>
-      <Divider variant="inset" component="li" /> */
-  //   </List>
-  // ));
 
   return (
     <Box sx={{ display: "flex", paddingTop: "60px" }} key="Box1">
@@ -268,7 +230,7 @@ function Chat() {
         {showChatMessages ? (
           <ChatRoom
             oldMessages={chatMessages} // Pass chatMessages as props
-            room={selectedChatIndex} // Pass username as props
+            room={selectedChatIndex} // Pass room as props
             chatInfo={chatInfo}
           />
         ) : (
