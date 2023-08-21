@@ -9,8 +9,8 @@ import {
   CardContent,
   Typography,
   CardActionArea,
+  ThemeProvider,
 } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
 import ElectronicAccessoriesPicture from "../images/ElectronicAccessories.png";
 import ElectronicDevices from "../images/ElectronicDevices.png";
 import TV from "../images/TV.png";

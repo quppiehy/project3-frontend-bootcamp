@@ -1,7 +1,15 @@
 import React, { useState } from "react";
-import { Box, Button, Grid, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  TextField,
+  Typography,
+  ThemeProvider,
+} from "@mui/material";
 import axios from "axios";
 import ProductCard from "../Components/ProductCard";
+import { theme2 } from "../theme";
 
 const Search = () => {
   const [filter, setFilter] = useState("");
@@ -33,8 +41,13 @@ const Search = () => {
 
   return (
     <>
-      <Box>
+      <Box sx={{ paddingTop: "100px" }}>
         <Box>
+          <ThemeProvider theme={theme2}>
+            <Typography sx={{ py: "20px" }} variant="h3">
+              Search
+            </Typography>
+          </ThemeProvider>
           <Box
             sx={{
               display: "flex",
@@ -42,6 +55,7 @@ const Search = () => {
               justifyContent: "center",
             }}
           >
+            <br />
             <TextField
               label="Search"
               variant="outlined"
