@@ -256,14 +256,16 @@ const Homepage = () => {
           variant="contained"
           color="primary"
           sx={{
+            mb: 2,
             position: "absolute",
             left: {
               xs: "10%",
               lg: "5%",
             },
             bottom: "0%",
-            transform: "translate(-50%, -50%)",
+            // transform: "translate(-50%, -50%)",
           }}
+          onClick={(e) => navigate("/deals")}
         >
           SHOP NOW
         </Button>{" "}
@@ -271,13 +273,14 @@ const Homepage = () => {
           variant="contained"
           color="primary"
           sx={{
+            mb: 2,
             position: "absolute",
             right: {
               xs: "10%",
               lg: "5%",
             },
             bottom: "0%",
-            transform: "translate(-50%, -50%)",
+            // transform: "translate(-50%, -50%)",
           }}
           onClick={(e) => navigate("/uploadproduct")}
         >
