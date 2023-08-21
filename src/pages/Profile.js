@@ -76,6 +76,12 @@ const Profile = () => {
       });
     } catch (error) {
       console.error("Error updating profile:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Missing required Fields",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 
